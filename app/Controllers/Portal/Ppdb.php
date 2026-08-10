@@ -96,8 +96,10 @@ class Ppdb extends BaseController
 
     protected function handleUpload($file): array
     {
-        if (function_exists('upload_media')) {
-            helper('upload');
+        $guard = new \App\Libraries\UploadGuard();
+        $validation = $guard->validateFile($file, 'ppdb');
+        if (! $validation['status']) {
+            return $validation;
         }
 
         $targetDir = FCPATH . 'uploads/ppdb/';
@@ -105,7 +107,7 @@ class Ppdb extends BaseController
             mkdir($targetDir, 0755, true);
         }
 
-        $newName = $file->getRandomName();
+        $newName  = $file->getRandomName();
         $safeName = mb_convert_encoding($newName, 'UTF-8', 'UTF-8');
 
         if ($file->move($targetDir, $safeName)) {
