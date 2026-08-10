@@ -83,7 +83,7 @@ class Home extends BaseController
         $announcements = [];
         if ($db->tableExists('announcements')) {
             $announcementModel = new AnnouncementModel();
-            $announcements     = $announcementModel->where('status', 'published')->orderBy('published_at', 'DESC')->findAll(5);
+            $announcements     = $announcementModel->where('status', 'published')->orderBy('created_at', 'DESC')->findAll(5);
         }
         $data['announcements'] = $announcements;
 
@@ -91,7 +91,7 @@ class Home extends BaseController
         $agendas = [];
         if ($db->tableExists('agendas')) {
             $agendaModel = new AgendaModel();
-            $agendas     = $agendaModel->where('status', 'published')->orderBy('event_date', 'ASC')->findAll(5);
+            $agendas     = $agendaModel->where('status', 'published')->orderBy('start_date', 'ASC')->findAll(5);
         }
         $data['agendas'] = $agendas;
 
@@ -99,7 +99,7 @@ class Home extends BaseController
         $galleries = [];
         if ($db->tableExists('galleries')) {
             $galleryModel = new GalleryModel();
-            $galleries    = $galleryModel->where('status', 'published')->orderBy('id', 'DESC')->findAll(6);
+            $galleries    = $galleryModel->orderBy('id', 'DESC')->findAll(6);
         }
         $data['galleries'] = $galleries;
 
@@ -115,7 +115,7 @@ class Home extends BaseController
         $testimonials = [];
         if ($db->tableExists('testimonials')) {
             $testimonialModel = new TestimonialModel();
-            $testimonials     = $testimonialModel->where('status', 'active')->orderBy('order_num', 'ASC')->findAll(6);
+            $testimonials     = $testimonialModel->where('is_active', 1)->findAll(6);
         }
         $data['testimonials'] = $testimonials;
 
@@ -123,7 +123,7 @@ class Home extends BaseController
         $partners = [];
         if ($db->tableExists('school_partners')) {
             $partnerModel = new PartnerModel();
-            $partners     = $partnerModel->where('status', 'active')->orderBy('order_num', 'ASC')->findAll(12);
+            $partners     = $partnerModel->orderBy('id', 'ASC')->findAll(12);
         }
         $data['partners'] = $partners;
 
