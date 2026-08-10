@@ -39,7 +39,14 @@ class Users extends BaseController
 
     public function create()
     {
-        if ($this->request->getMethod() === 'post') {
+        if (strtolower($this->request->getMethod()) === 'post') {
+            $roleIds = $this->request->getPost('role_ids');
+            $roleIdsArray = is_array($roleIds) ? $roleIds : [];
+            $secError = $this->checkRoleAssignmentSecurity(null, $roleIdsArray);
+            if ($secError) {
+                return $secError;
+            }
+
             $fullName = $this->request->getPost('full_name');
             $username = $this->request->getPost('username') ?: strtolower(str_replace(' ', '.', (string) $fullName));
             $password = $this->request->getPost('password');
@@ -66,13 +73,8 @@ class Users extends BaseController
             $insertId = $this->userModel->insert($postData);
 
             if ($insertId) {
-                $roleIds = $this->request->getPost('role_ids');
-                if (! empty($roleIds) && is_array($roleIds)) {
-                    $secError = $this->checkRoleAssignmentSecurity(null, $roleIds);
-                    if ($secError) {
-                        return $secError;
-                    }
-                    $this->userModel->saveUserRoles((int) $insertId, $roleIds);
+                if (! empty($roleIdsArray)) {
+                    $this->userModel->saveUserRoles((int) $insertId, $roleIdsArray);
                 }
 
                 $this->logActivity('Users', 'create', null, json_encode(['id' => $insertId, 'email' => $postData['email']]));
@@ -92,7 +94,14 @@ class Users extends BaseController
             throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound('Pengguna tidak ditemukan.');
         }
 
-        if ($this->request->getMethod() === 'post') {
+        if (strtolower($this->request->getMethod()) === 'post') {
+            $roleIds = $this->request->getPost('role_ids');
+            $roleIdsArray = is_array($roleIds) ? $roleIds : [];
+            $secError = $this->checkRoleAssignmentSecurity((int) $id, $roleIdsArray);
+            if ($secError) {
+                return $secError;
+            }
+
             $postData = [
                 'id'        => $id,
                 'full_name' => $this->request->getPost('full_name'),
@@ -268,6 +277,12 @@ class Users extends BaseController
 
         // Check if any role in $roleIds is Super Admin
         if (! empty($roleIds)) {
+            $intRoleIds = array_map('intval', $roleIds);
+            if (in_array(1, $intRoleIds, true)) { // Default Super Admin role ID is 1
+                $this->logActivity('Users', 'escalation_attempt_denied', null, json_encode(['actor_id' => $actorId, 'target_id' => $targetUserId, 'attempted_role_id' => 1]));
+                return $this->renderSecurityError('Anda tidak memiliki hak akses untuk menetapkan role Super Admin.');
+            }
+
             $db = \Config\Database::connect();
             if ($db->tableExists('roles')) {
                 $superAdminRoles = $db->table('roles')
@@ -277,8 +292,8 @@ class Users extends BaseController
                     ->getResult();
                 $superAdminRoleIds = array_map(static fn ($r) => (int) $r->id, $superAdminRoles);
 
-                foreach ($roleIds as $rId) {
-                    if (in_array((int) $rId, $superAdminRoleIds, true)) {
+                foreach ($intRoleIds as $rId) {
+                    if (in_array($rId, $superAdminRoleIds, true)) {
                         $this->logActivity('Users', 'escalation_attempt_denied', null, json_encode(['actor_id' => $actorId, 'target_id' => $targetUserId, 'attempted_role_id' => $rId]));
                         return $this->renderSecurityError('Anda tidak memiliki hak akses untuk menetapkan role Super Admin.');
                     }

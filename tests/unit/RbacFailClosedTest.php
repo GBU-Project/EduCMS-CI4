@@ -10,14 +10,11 @@ class RbacFailClosedTest extends CIUnitTestCase
     public function testRbacFailsClosedWhenTablesDoNotExist()
     {
         $rbac = new RbacNative();
-        // Given a user ID, if tables don't exist or tableExists returns false for non-existent table:
-        // has_permission must return false
-        // is_super_admin must return false
-        // get_user_permissions must return []
-        // get_user_roles must return []
-        $this->assertIsBool($rbac->has_permission(1, 'dashboard.view'));
-        $this->assertIsBool($rbac->is_super_admin(1));
-        $this->assertIsArray($rbac->get_user_permissions(1));
-        $this->assertIsArray($rbac->get_user_roles(1));
+        
+        // Test values on non-existent user ID / non-existent DB tables behavior
+        $this->assertFalse($rbac->has_permission(999999, 'non_existent_perm'));
+        $this->assertFalse($rbac->is_super_admin(999999));
+        $this->assertEquals([], $rbac->get_user_permissions(999999));
+        $this->assertEquals([], $rbac->get_user_roles(999999));
     }
 }

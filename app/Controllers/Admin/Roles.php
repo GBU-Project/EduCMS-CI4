@@ -36,11 +36,23 @@ class Roles extends BaseController
 
     public function create()
     {
-        if ($this->request->getMethod() === 'post') {
+        if (strtolower($this->request->getMethod()) === 'post') {
             $postData = [
                 'name'        => $this->request->getPost('name'),
                 'description' => $this->request->getPost('description'),
             ];
+
+            $secNameError = $this->checkRoleNameSecurity(null, (string) $postData['name']);
+            if ($secNameError) {
+                return $secNameError;
+            }
+
+            $permIds = $this->request->getPost('permission_ids');
+            $permIdsArray = is_array($permIds) ? $permIds : [];
+            $secError = $this->checkPermissionAssignmentSecurity($permIdsArray);
+            if ($secError) {
+                return $secError;
+            }
 
             if (! $this->roleModel->validate($postData)) {
                 session()->setFlashdata('error', implode('<br>', $this->roleModel->errors()));
@@ -50,13 +62,6 @@ class Roles extends BaseController
             $insertId = $this->roleModel->insert($postData);
 
             if ($insertId) {
-                $permIds = $this->request->getPost('permission_ids');
-                $permIdsArray = is_array($permIds) ? $permIds : [];
-                $secError = $this->checkPermissionAssignmentSecurity($permIdsArray);
-                if ($secError) {
-                    return $secError;
-                }
-
                 if (! empty($permIdsArray)) {
                     $this->roleModel->saveRolePermissions((int) $insertId, $permIdsArray);
                 }
@@ -78,12 +83,17 @@ class Roles extends BaseController
             throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound('Role tidak ditemukan.');
         }
 
-        if ($this->request->getMethod() === 'post') {
+        if (strtolower($this->request->getMethod()) === 'post') {
             $postData = [
                 'id'          => $id,
                 'name'        => $this->request->getPost('name'),
                 'description' => $this->request->getPost('description'),
             ];
+
+            $secNameError = $this->checkRoleNameSecurity((string) $row->name, (string) $postData['name']);
+            if ($secNameError) {
+                return $secNameError;
+            }
 
             if (! $this->roleModel->validate($postData)) {
                 session()->setFlashdata('error', implode('<br>', $this->roleModel->errors()));
@@ -243,6 +253,46 @@ class Roles extends BaseController
                     return $this->response->setStatusCode(403)->setBody(view('errors/html/error_403', ['message' => 'Anda hanya dapat memberikan permission yang Anda miliki.']));
                 }
             }
+        }
+
+        return null;
+    }
+
+    protected function checkRoleNameSecurity(?string $originalRoleName, string $newRoleName)
+    {
+        $actorId = (int) session()->get('user_id');
+        /** @var \App\Libraries\RbacNative $rbac */
+        $rbac = service('rbac');
+        $isActorSuperAdmin = $rbac->is_super_admin($actorId);
+
+        if ($isActorSuperAdmin) {
+            return null;
+        }
+
+        $protectedNames = ['Super Admin', 'admin'];
+
+        // 1. Block non-Super-Admin from editing a role currently named Super Admin or admin
+        if ($originalRoleName !== null && in_array($originalRoleName, $protectedNames, true)) {
+            $this->logActivity('Roles', 'role_rename_denied', null, json_encode([
+                'actor_id' => $actorId,
+                'original_name' => $originalRoleName,
+            ]));
+            if ($this->request->isAJAX()) {
+                return $this->response->setStatusCode(403)->setJSON(['error' => 'Tidak boleh mengubah role Super Admin.']);
+            }
+            return $this->response->setStatusCode(403)->setBody(view('errors/html/error_403', ['message' => 'Tidak boleh mengubah role Super Admin.']));
+        }
+
+        // 2. Block non-Super-Admin from renaming ANY role into Super Admin or admin
+        if (in_array($newRoleName, $protectedNames, true)) {
+            $this->logActivity('Roles', 'role_rename_denied', null, json_encode([
+                'actor_id' => $actorId,
+                'attempted_name' => $newRoleName,
+            ]));
+            if ($this->request->isAJAX()) {
+                return $this->response->setStatusCode(403)->setJSON(['error' => 'Nama role tidak diperbolehkan.']);
+            }
+            return $this->response->setStatusCode(403)->setBody(view('errors/html/error_403', ['message' => 'Nama role tidak diperbolehkan.']));
         }
 
         return null;
