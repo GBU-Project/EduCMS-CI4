@@ -81,6 +81,13 @@ Dokumen ini mencatat seluruh perbaikan temuan audit keamanan yang telah diselesa
 > - `testimonials`: `status` $\rightarrow$ `is_active`
 > - `school_partners`: menghapus filter `status` & `order_num` (kolom tidak ada di tabel)
 
+> [!TIP]
+> **Pencegahan Fatal Exception pada Koneksi Local HTTP (Commit `785ef49`)**:
+> - **`app/Config/Cookie.php`**: Memperbarui `$this->secure` agar mengevaluasi ketersediaan koneksi HTTPS secara dinamis (`$isHttps`) sebelum mewajibkan cookie secure. Mencegah `SecurityException: Attempted to send a secure cookie over a non-secure connection` pada HTTP local.
+> - **`app/Views/portal/partials/header.php` & `footer.php`**: Menggunakan null-coalescing `$header_menu ?? []` dan `$footer_menu ?? []` untuk mencegah `Undefined variable` notice/exception.
+> - **`app/Config/Routes.php`**: Mengubah huruf kecil `['get', 'post']` menjadi kapital `['GET', 'POST']` untuk menghilangkan PHP Deprecation warning di CI4 4.7+.
+> - **HTDOCS Sync & DB Connection**: Memperbarui kredensial database `.env` ke user `root` XAMPP lokal yang aktif.
+
 ---
 
 ## Hasil Akhir Unit Testing
