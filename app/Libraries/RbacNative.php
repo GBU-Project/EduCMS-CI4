@@ -18,9 +18,9 @@ class RbacNative
      */
     public function has_permission(int $userId, string $permissionName): bool
     {
-        // 1. Fail-safe for early phases before database structure exists
+        // 1. Fail-closed: deny access if database structure is missing
         if (! $this->db->tableExists('user_roles')) {
-            return true;
+            return false;
         }
 
         // 2. Fetch user roles. Super Admin has access to everything
@@ -39,9 +39,9 @@ class RbacNative
      */
     public function get_user_permissions(int $userId): array
     {
-        // Fail-safe
+        // Fail-closed
         if (! $this->db->tableExists('user_roles') || ! $this->db->tableExists('role_permissions')) {
-            return ['all'];
+            return [];
         }
 
         $query = $this->db->table('user_roles')
@@ -66,7 +66,7 @@ class RbacNative
     public function is_super_admin(int $userId): bool
     {
         if (! $this->db->tableExists('user_roles')) {
-            return true;
+            return false;
         }
 
         $userRoles = $this->get_user_roles($userId);
@@ -78,9 +78,9 @@ class RbacNative
      */
     public function get_user_roles(int $userId): array
     {
-        // Fail-safe
+        // Fail-closed
         if (! $this->db->tableExists('user_roles')) {
-            return ['Super Admin'];
+            return [];
         }
 
         $query = $this->db->table('user_roles')
