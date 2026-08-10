@@ -32,7 +32,7 @@
     // so every eduform_file() image field (Posts, Pages, Sliders,
     // Achievements, Extracurriculars, Staff, Teachers) can open it without
     // each view needing to load it individually.
-    $this->load->view('admin/components/image_picker');
+    echo view('admin/components/image_picker');
 ?>
 </body>
 </html>

@@ -55,7 +55,7 @@
             });
         }
     </script>
-    <?php $this->load->view('portal/partials/floating_actions'); ?>
+    <?php echo view('portal/partials/floating_actions', $data ?? []); ?>
 </body>
 </html>
 

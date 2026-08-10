@@ -1,4 +1,4 @@
-<?php $this->load->view('portal/partials/header'); ?>
+<?php echo view('portal/partials/header', $data ?? []); ?>
 
 <?php
 // ================================================================
@@ -658,4 +658,4 @@ if (!empty($homepage_sections)):
 </main>
 <?php endif; ?>
 
-<?php $this->load->view('portal/partials/footer'); ?>
+<?php echo view('portal/partials/footer', $data ?? []); ?>

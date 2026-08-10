@@ -17,10 +17,10 @@
         </p>
     </div>
 
-    <?php if ($this->session->flashdata('contact_success')): ?>
-        <div class="mb-8 bg-green-50 border border-green-200 text-green-700 px-5 py-4 rounded-xl flex items-start space-x-3">
-            <i data-lucide="circle-check" class="w-5 h-5 mt-0.5 shrink-0"></i>
-            <span><?php echo esc_html($this->session->flashdata('contact_success')); ?></span>
+    <?php if (session()->getFlashdata('contact_success')): ?>
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <i class="fa-solid fa-circle-check me-2"></i>
+            <span><?php echo esc_html((string) session()->getFlashdata('contact_success')); ?></span>
         </div>
     <?php endif; ?>
 

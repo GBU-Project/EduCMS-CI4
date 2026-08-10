@@ -15,7 +15,7 @@ $routes->setTranslateURIDashes(true);
 // module (admin/posts/create, admin/menu-groups, admin/videos/edit/3, ...).
 // Enable legacy auto-routing so those URLs keep working without an explicit
 // route per controller action.
-$routes->setAutoRoute(true);
+$routes->setAutoRoute(false);
 
 $routes->set404Override('App\Controllers\Main::error_404');
 

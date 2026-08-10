@@ -207,15 +207,15 @@
             </div>
 
             <!-- Display Flash Message Alerts -->
-            <?php if ($this->session->flashdata('error')): ?>
+            <?php if (session()->getFlashdata('error')): ?>
                 <div class="alert alert-danger" role="alert">
-                    <i class="fa-solid fa-triangle-exclamation me-2"></i> <?php echo esc_html($this->session->flashdata('error')); ?>
+                    <i class="fa-solid fa-triangle-exclamation me-2"></i> <?php echo esc_html((string) session()->getFlashdata('error')); ?>
                 </div>
             <?php endif; ?>
 
-            <?php if ($this->session->flashdata('success')): ?>
+            <?php if (session()->getFlashdata('success')): ?>
                 <div class="alert alert-success" role="alert">
-                    <i class="fa-solid fa-circle-check me-2"></i> <?php echo esc_html($this->session->flashdata('success')); ?>
+                    <i class="fa-solid fa-circle-check me-2"></i> <?php echo esc_html((string) session()->getFlashdata('success')); ?>
                 </div>
             <?php endif; ?>
 
