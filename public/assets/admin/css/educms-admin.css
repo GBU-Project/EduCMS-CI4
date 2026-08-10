@@ -1,0 +1,311 @@
+/**
+ * EduCMS Admin UI Foundation Styles
+ * Custom CSS component styles for loading overlays, empty states, and themes
+ */
+
+:root {
+    --primary-color: #6366f1;
+    --primary-hover: #4f46e5;
+    --primary-glow: rgba(99, 102, 241, 0.15);
+}
+
+/* =========================================================
+   "Indigo" Button / Badge / Text / Background Utilities
+   -----------------------------------------------------------
+   Used throughout the admin CRUD views (Tambah/Simpan buttons,
+   status badges, icons) but previously undefined in this
+   stylesheet, causing those elements to render with no
+   background/border color (browser default) and fail basic
+   contrast/visibility — fixed here per UAT BUG #2.
+   ========================================================= */
+.btn-indigo {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+    color: #ffffff;
+}
+.btn-indigo:hover,
+.btn-indigo:focus,
+.btn-indigo:active {
+    background-color: var(--primary-hover) !important;
+    border-color: var(--primary-hover) !important;
+    color: #ffffff !important;
+}
+.btn-indigo:focus {
+    box-shadow: 0 0 0 3px var(--primary-glow) !important;
+}
+
+.btn-outline-indigo {
+    background-color: transparent;
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+}
+.btn-outline-indigo:hover,
+.btn-outline-indigo:focus,
+.btn-outline-indigo:active {
+    background-color: var(--primary-color) !important;
+    border-color: var(--primary-color) !important;
+    color: #ffffff !important;
+}
+
+.badge-indigo {
+    background-color: var(--primary-color);
+    color: #ffffff;
+}
+
+.text-indigo {
+    color: var(--primary-color) !important;
+}
+
+.bg-indigo {
+    background-color: var(--primary-color) !important;
+}
+
+.dark-mode .btn-outline-indigo {
+    color: #a5a9f7;
+    border-color: #a5a9f7;
+}
+.dark-mode .btn-outline-indigo:hover {
+    background-color: #a5a9f7 !important;
+    border-color: #a5a9f7 !important;
+    color: #0f172a !important;
+}
+
+/* Custom form focus styling */
+.form-control:focus, .custom-select:focus {
+    border-color: var(--primary-color) !important;
+    box-shadow: 0 0 0 3px var(--primary-glow) !important;
+}
+
+/* Loading Overlay Component */
+.loading-overlay-wrapper {
+    position: relative;
+}
+
+.loading-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.75);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 1060;
+    border-radius: 8px;
+    transition: opacity 0.3s ease;
+}
+
+.dark-mode .loading-overlay {
+    background: rgba(15, 23, 42, 0.75);
+}
+
+.loading-spinner {
+    width: 40px;
+    height: 40px;
+    border: 3px solid rgba(99, 102, 241, 0.2);
+    border-top: 3px solid var(--primary-color);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    margin-bottom: 10px;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Empty State Component */
+.empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 45px 20px;
+    border: 2px dashed #e2e8f0;
+    border-radius: 12px;
+    background: #ffffff;
+    transition: all 0.3s ease;
+}
+
+.dark-mode .empty-state {
+    border-color: rgba(255, 255, 255, 0.08);
+    background: #1e293b;
+}
+
+.empty-state-icon {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    background: #f1f5f9;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 15px;
+    color: #94a3b8;
+}
+
+.dark-mode .empty-state-icon {
+    background: #0f172a;
+    color: #475569;
+}
+
+.empty-state-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #1e293b;
+    margin-bottom: 5px;
+}
+
+.dark-mode .empty-state-title {
+    color: #f8fafc;
+}
+
+.empty-state-description {
+    font-size: 0.88rem;
+    color: #64748b;
+    max-width: 320px;
+    margin-bottom: 15px;
+}
+
+.dark-mode .empty-state-description {
+    color: #94a3b8;
+}
+
+/* Card Design Enhancements */
+.card-premium {
+    border-radius: 16px !important;
+    border: 1px solid #e2e8f0 !important;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03) !important;
+    overflow: hidden;
+}
+
+.dark-mode .card-premium {
+    background-color: #1e293b !important;
+    border-color: rgba(255, 255, 255, 0.05) !important;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3) !important;
+}
+
+/* Theme Manager button classes */
+.theme-toggle-btn {
+    cursor: pointer;
+    transition: transform 0.2s ease;
+}
+.theme-toggle-btn:hover {
+    transform: scale(1.1);
+}
+
+/* SweetAlert2 Dark Mode Custom overrides */
+.dark-mode .swal2-popup {
+    background-color: #1e293b !important;
+    color: #f8fafc !important;
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+}
+.dark-mode .swal2-title, .dark-mode .swal2-html-container {
+    color: #f8fafc !important;
+}
+.dark-mode .swal2-success-circular-line-left,
+.dark-mode .swal2-success-circular-line-right,
+.dark-mode .swal2-success-fix {
+    background-color: transparent !important;
+}
+
+/* =========================================================
+   RC07-004: Unified Admin UX Design System Enhancements
+   ========================================================= */
+
+/* Custom Switch Indigo Color Scheme */
+.custom-control-input:checked ~ .custom-control-label::before {
+    color: #ffffff;
+    border-color: var(--primary-color) !important;
+    background-color: var(--primary-color) !important;
+}
+
+/* Pagination Indigo Theme */
+.page-item.active .page-link {
+    background-color: var(--primary-color) !important;
+    border-color: var(--primary-color) !important;
+    color: #ffffff !important;
+}
+.page-link {
+    color: var(--primary-color);
+    border-radius: 6px;
+    margin: 0 2px;
+}
+.page-link:hover {
+    color: var(--primary-hover);
+}
+
+/* DataTables & Table Design Language */
+.table thead th {
+    border-top: none;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.78rem;
+    letter-spacing: 0.5px;
+    color: #475569;
+    background-color: #f1f5f9;
+}
+.dark-mode .table thead th {
+    background-color: #0f172a;
+    color: #94a3b8;
+}
+
+/* Modal Styling Consistency */
+.modal-content {
+    border-radius: 16px !important;
+    border: none !important;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04) !important;
+    overflow: hidden;
+}
+.modal-header {
+    border-bottom: 1px solid #e2e8f0;
+    padding: 1.25rem 1.5rem;
+}
+.modal-footer {
+    border-top: 1px solid #e2e8f0;
+    padding: 1rem 1.5rem;
+}
+.dark-mode .modal-content {
+    background-color: #1e293b;
+}
+.dark-mode .modal-header, .dark-mode .modal-footer {
+    border-color: rgba(255, 255, 255, 0.08);
+}
+
+/* Badge Styling Uniformity */
+.badge {
+    font-weight: 600;
+    padding: 5px 10px;
+    border-radius: 6px;
+}
+
+/* =========================================================
+   RC07-007: Final Product Polish Micro-Interactions & Polish
+   ========================================================= */
+
+/* Smooth Button & Element Hover Micro-interactions */
+.btn {
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
+.btn:hover {
+    transform: translateY(-1px);
+}
+.btn:active {
+    transform: translateY(0);
+}
+
+/* Card Transition & Elevation */
+.card {
+    transition: box-shadow 0.25s ease, transform 0.25s ease;
+}
+
+/* Tooltip & Badge Refinement */
+.tooltip-inner {
+    border-radius: 8px !important;
+    padding: 6px 12px !important;
+    font-size: 0.8rem !important;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1) !important;
+}

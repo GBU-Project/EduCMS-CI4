@@ -1,0 +1,19 @@
+# -----------------------------------------------------------------------
+# Convenience redirector for non-vhost installs (e.g. XAMPP with the whole
+# project dropped into htdocs/educms/ without a virtual host pointing
+# straight at htdocs/educms/public/).
+#
+# CodeIgniter 4's real webroot is the public/ folder. This sends a normal
+# HTTP redirect from http://localhost/educms/... to
+# http://localhost/educms/public/... so the browser's address bar always
+# matches app.baseURL in .env (avoids subtle routing/asset issues that an
+# internal rewrite can cause).
+#
+# If you set up a proper virtual host with DocumentRoot pointing directly
+# at .../educms/public, delete this file — it isn't needed.
+# -----------------------------------------------------------------------
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteCond %{REQUEST_URI} !^/educms/public/ [NC]
+    RewriteRule ^(.*)$ /educms/public/$1 [R=302,L]
+</IfModule>

@@ -1,0 +1,41 @@
+-- =========================================================
+-- EduCMS Schema Migration: 010_homepage_settings.sql
+-- STATUS: RC4 — Homepage Content Expansion
+--
+-- Adds the single new setting the RC4 homepage needs: the school's
+-- video profile URL (YouTube embed), shown in a new "Video Profil
+-- Sekolah" section on the portal home page.
+--
+-- Design notes:
+--   * This is a data-only migration — INSERT into the existing
+--     `settings` table, no ALTER TABLE. `group_name` already
+--     includes 'school' in its ENUM (schema.sql), so no column/enum
+--     change is needed either.
+--   * `is_autoload = 1` so Portal_Controller's existing
+--     `$this->site_settings` (populated via Setting_model::
+--     get_autoloaded()) picks it up automatically — Home.php does
+--     not need a dedicated query for it.
+--   * Because Admin -> Setelan Website (Settings::index /
+--     admin/views/admin/settings/index.php) already renders every
+--     row of the `settings` table generically, grouped by
+--     `group_name`, this one INSERT is also what makes the "Video
+--     profile url" field appear in the Data Sekolah tab — no admin
+--     view/controller change required.
+--   * `value` starts empty ('') on purpose: the portal view checks
+--     for a non-empty value and hides the whole video section when
+--     it's blank, so existing sites are unaffected until an admin
+--     fills it in.
+--   * INSERT ... ON DUPLICATE KEY UPDATE against the existing
+--     `uk_group_key` (group_name, key) unique key makes this
+--     idempotent: safe to run again, and a no-op if a site somehow
+--     already has this key (e.g. partially-applied migration).
+--     Db_upgrade also already treats ER_DUP_ENTRY (1062) as benign,
+--     so this is doubly safe.
+--
+-- Safe to run on a live database: single INSERT, no table lock,
+-- no data dropped.
+-- =========================================================
+
+INSERT INTO `settings` (`group_name`, `key`, `value`, `is_autoload`)
+VALUES ('school', 'video_profile_url', '', 1)
+ON DUPLICATE KEY UPDATE `group_name` = `group_name`;

@@ -1,0 +1,32 @@
+# Environment & Sensitive Configs
+.env
+env
+.env.*
+!.env.example
+
+# Composer Dependencies
+/vendor/
+
+# System / Temporary / Cache Logs
+/writable/cache/*
+/writable/debugbar/*
+/writable/logs/*
+/writable/session/*
+/writable/uploads/*
+!/writable/cache/index.html
+!/writable/debugbar/index.html
+!/writable/logs/index.html
+!/writable/session/index.html
+!/writable/uploads/index.html
+
+# User Uploaded Media Files
+/public/uploads/*
+!/public/uploads/.gitkeep
+!/public/uploads/index.html
+
+# IDE & OS Files
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
