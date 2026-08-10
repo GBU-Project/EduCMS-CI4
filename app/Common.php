@@ -94,21 +94,7 @@ if (! function_exists('show_error')) {
     }
 }
 
-if (! function_exists('config_item')) {
-    /**
-     * CI3-compatible config_item().
-     */
-    function config_item($key)
-    {
-        $instance = \Compat::instance();
 
-        if ($instance !== null && isset($instance->config)) {
-            return $instance->config->item($key);
-        }
-
-        return null;
-    }
-}
 
 if (! function_exists('userdata')) {
     function userdata($key = null)
