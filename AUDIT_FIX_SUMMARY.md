@@ -72,6 +72,15 @@ Dokumen ini mencatat seluruh perbaikan temuan audit keamanan yang telah diselesa
 > Saat ini file migrasi `.sql` berada di folder `public/database/migrations/` dan diproteksi dengan aturan blokir di `public/.htaccess`.
 > **Saran Jangka Panjang**: Pindahkan seluruh folder migrasi dari `public/database/migrations/` ke luar webroot (misalnya ke `app/Database/Migrations/` atau `database/migrations/`) dan perbarui properti `$migrationsPath` pada `DbUpgradeNative`. Hal ini untuk mengantisipasi lingkungan server Nginx yang tidak membaca file `.htaccess`.
 
+> [!TIP]
+> **Perbaikan 5 Query Column Mismatch pada Homepage (Commit `4ae0f11`)**:
+> Mengoreksi 5 nama kolom yang mismatch pada `app/Controllers/Portal/Home.php` agar cocok 1:1 dengan skema database real:
+> - `announcements`: `published_at` $\rightarrow$ `created_at`
+> - `agendas`: `event_date` $\rightarrow$ `start_date`
+> - `galleries`: menghapus filter `status` (kolom tidak ada di tabel)
+> - `testimonials`: `status` $\rightarrow$ `is_active`
+> - `school_partners`: menghapus filter `status` & `order_num` (kolom tidak ada di tabel)
+
 ---
 
 ## Hasil Akhir Unit Testing
@@ -82,9 +91,9 @@ PHPUnit 10.5.64 by Sebastian Bergmann and contributors.
 Runtime:       PHP 8.2.12
 Configuration: C:\Users\koko1\Downloads\educms-ci4-FINAL\phpunit.dist.xml
 
-............                                                      12 / 12 (100%)
+.............                                                     13 / 13 (100%)
 
-Time: 00:00.169, Memory: 18.00 MB
+Time: 00:00.575, Memory: 18.00 MB
 
-OK (12 tests, 22 assertions)
+OK (13 tests, 23 assertions)
 ```
