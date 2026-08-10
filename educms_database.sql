@@ -757,7 +757,8 @@ INSERT INTO `permissions` VALUES
 (50,3,'menu.create','Membuat item menu navigasi baru','2026-08-07 23:31:47','2026-08-07 23:31:47',NULL,NULL),
 (51,3,'menu.edit','Mengedit item menu navigasi','2026-08-07 23:31:47','2026-08-07 23:31:47',NULL,NULL),
 (52,3,'menu.delete','Menghapus item menu navigasi','2026-08-07 23:31:47','2026-08-07 23:31:47',NULL,NULL),
-(53,3,'menu.restore','Memulihkan item menu navigasi dari sampah','2026-08-07 23:31:47','2026-08-07 23:31:47',NULL,NULL);
+(53,3,'menu.restore','Memulihkan item menu navigasi dari sampah','2026-08-07 23:31:47','2026-08-07 23:31:47',NULL,NULL),
+(54,1,'dashboard.view','Melihat dasbor utama admin','2026-08-07 23:31:47','2026-08-07 23:31:47',NULL,NULL);
 /*!40000 ALTER TABLE `permissions` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -1099,7 +1100,9 @@ INSERT INTO `role_permissions` VALUES
 (5,19),
 (5,20),
 (5,33),
-(5,34);
+(5,34),
+(2,54),
+(3,54);
 /*!40000 ALTER TABLE `role_permissions` ENABLE KEYS */;
 UNLOCK TABLES;
 
