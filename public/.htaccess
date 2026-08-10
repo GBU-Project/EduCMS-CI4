@@ -1,6 +1,11 @@
 # Disable directory browsing
 Options -Indexes
 
+# Block public access to .sql files
+<FilesMatch "\.sql$">
+    Require all denied
+</FilesMatch>
+
 # ----------------------------------------------------------------------
 # Rewrite engine
 # ----------------------------------------------------------------------

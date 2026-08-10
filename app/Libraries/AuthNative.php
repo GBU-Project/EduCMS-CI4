@@ -50,6 +50,7 @@ class AuthNative
                 'logged_in' => true,
             ];
 
+            session()->regenerate(true);
             session()->set($sessionData);
             return true;
         }
