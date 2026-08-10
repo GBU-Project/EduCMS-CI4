@@ -10,15 +10,7 @@ if (! defined('CI_VERSION')) {
     define('CI_VERSION', '4.7.4');
 }
 
-if (! function_exists('get_instance')) {
-    /**
-     * Returns the current active controller (CI3-compatible).
-     */
-    function get_instance()
-    {
-        return \Compat::instance();
-    }
-}
+
 
 if (! function_exists('redirect')) {
     /**

@@ -1,93 +1,94 @@
 <?php
 /**
- * EduCMS CRUD Helper
+ * EduCMS CRUD Helper (Native CI4)
  * Centralizes slug generation, reusable list actions, and alert/toast integrations.
  */
 
-if (!function_exists('generate_unique_slug')) {
+if (! function_exists('generate_unique_slug')) {
     /**
      * Generate unique slug for any database table
      */
-    function generate_unique_slug($title, $model_name, $exclude_id = NULL, $field_name = 'slug') {
-        $CI = get_instance();
-        $CI->load->helper('educms_helper');
+    function generate_unique_slug($title, $tableName, $excludeId = null, $fieldName = 'slug')
+    {
+        helper('educms_helper');
         $slug = slugify($title);
-        
-        $original_slug = $slug;
-        $i = 1;
-        while (TRUE) {
-            $CI->db->where($field_name, $slug);
-            if ($exclude_id !== NULL) {
-                $CI->db->where('id !=', $exclude_id);
+
+        $db           = \Config\Database::connect();
+        $originalSlug = $slug;
+        $i            = 1;
+
+        while (true) {
+            $builder = $db->table($tableName)->where($fieldName, $slug);
+            if ($excludeId !== null) {
+                $builder->where('id !=', $excludeId);
             }
-            $count = $CI->db->count_all_results($CI->$model_name->table);
+            $count = $builder->countAllResults();
             if ($count === 0) {
                 break;
             }
-            $slug = $original_slug . '-' . $i;
+            $slug = $originalSlug . '-' . $i;
             $i++;
         }
         return $slug;
     }
 }
 
-if (!function_exists('render_action_buttons')) {
+if (! function_exists('render_action_buttons')) {
     /**
-     * Standardized Action Buttons renderer for lists (reusable action buttons)
+     * Standardized Action Buttons renderer for lists
      */
-    function render_action_buttons($id, $slug, $route_prefix, $show_trash = FALSE, $preview_url = '') {
+    function render_action_buttons($id, $slug, $routePrefix, $showTrash = false, $previewUrl = '')
+    {
         $output = '';
-        if ($show_trash) {
-            $restore_url = base_url($route_prefix . '/restore/' . $id);
-            $force_delete_url = base_url($route_prefix . '/force_delete/' . $id);
-            $output .= '<a href="' . $restore_url . '" class="btn btn-xs btn-success mr-1" title="Pulihkan">' . render_icon('trash-arrow-up') . '</a>';
-            $output .= '<button type="button" class="btn btn-xs btn-danger js-confirm-force-delete" data-force-delete-url="' . $force_delete_url . '" title="Hapus Permanen">' . render_icon('ban') . '</button>';
+        if ($showTrash) {
+            $restoreUrl    = base_url($routePrefix . '/restore/' . $id);
+            $forceDeleteUrl = base_url($routePrefix . '/force_delete/' . $id);
+            $output        .= '<a href="' . $restoreUrl . '" class="btn btn-xs btn-success mr-1" title="Pulihkan">' . render_icon('trash-arrow-up') . '</a>';
+            $output        .= '<button type="button" class="btn btn-xs btn-danger js-confirm-force-delete" data-force-delete-url="' . $forceDeleteUrl . '" title="Hapus Permanen">' . render_icon('ban') . '</button>';
         } else {
-            if (!empty($preview_url)) {
-                $output .= '<a href="' . base_url($preview_url) . '" target="_blank" class="btn btn-xs btn-info mr-1" title="Pratinjau">' . render_icon('eye') . '</a>';
+            if (! empty($previewUrl)) {
+                $output .= '<a href="' . base_url($previewUrl) . '" target="_blank" class="btn btn-xs btn-info mr-1" title="Pratinjau">' . render_icon('eye') . '</a>';
             }
-            $edit_url = base_url($route_prefix . '/edit/' . $id);
-            $delete_url = base_url($route_prefix . '/delete/' . $id);
-            $output .= '<a href="' . $edit_url . '" class="btn btn-xs btn-indigo mr-1" title="Edit">' . render_icon('edit') . '</a>';
-            $output .= '<button type="button" class="btn btn-xs btn-danger js-confirm-delete" data-delete-url="' . $delete_url . '" title="Hapus">' . render_icon('trash') . '</button>';
+            $editUrl   = base_url($routePrefix . '/edit/' . $id);
+            $deleteUrl = base_url($routePrefix . '/delete/' . $id);
+            $output   .= '<a href="' . $editUrl . '" class="btn btn-xs btn-indigo mr-1" title="Edit">' . render_icon('edit') . '</a>';
+            $output   .= '<button type="button" class="btn btn-xs btn-danger js-confirm-delete" data-delete-url="' . $deleteUrl . '" title="Hapus">' . render_icon('trash') . '</button>';
         }
         return $output;
     }
 }
 
-if (!function_exists('render_flash_messages')) {
+if (! function_exists('render_flash_messages')) {
     /**
-     * Unified Flash Messages script renderer using HTML Alert Banner + SweetAlert2 toasts
+     * Unified Flash Messages script renderer using HTML Alert Banner + SweetAlert2 toasts (Native CI4)
      */
-    function render_flash_messages() {
-        $CI = get_instance();
-        $output = '';
-        $icon_map = array('success' => 'circle-check', 'error' => 'circle-xmark', 'warning' => 'triangle-exclamation', 'info' => 'circle-info');
-        
-        foreach (array('success', 'error', 'info', 'warning') as $type) {
-            $msg = $CI->session->flashdata($type);
+    function render_flash_messages()
+    {
+        $output  = '';
+        $iconMap = ['success' => 'circle-check', 'error' => 'circle-xmark', 'warning' => 'triangle-exclamation', 'info' => 'circle-info'];
+
+        foreach (['success', 'error', 'info', 'warning'] as $type) {
+            $msg = session()->getFlashdata($type);
             if ($msg) {
-                $bs_class = ($type === 'error') ? 'danger' : $type;
-                $icon_name = isset($icon_map[$type]) ? $icon_map[$type] : 'circle-info';
-                
-                // 1. Visible HTML Alert Banner
+                $bsClass  = ($type === 'error') ? 'danger' : $type;
+                $iconName = isset($iconMap[$type]) ? $iconMap[$type] : 'circle-info';
+
                 $output .= '
-                <div class="alert alert-' . $bs_class . ' alert-dismissible fade show shadow-sm mb-4" role="alert" style="border-radius:12px;font-weight:500;">
-                    <i class="fa-solid fa-' . $icon_name . ' mr-2 fa-lg"></i>
-                    <span>' . nl2br(esc_html($msg)) . '</span>
+                <div class="alert alert-' . $bsClass . ' alert-dismissible fade show shadow-sm mb-4" role="alert" style="border-radius:12px;font-weight:500;">
+                    <i class="fa-solid fa-' . $iconName . ' mr-2 fa-lg"></i>
+                    <span>' . nl2br(esc_html((string) $msg)) . '</span>
                     <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>';
 
-                // 2. SweetAlert2 Toast via Vanilla JS DOMContentLoaded Listener
-                $msg_js = json_encode($msg);
+                $msgJs   = json_encode($msg);
                 $output .= "
                 <script>
                     (function() {
                         function fireToast() {
                             if (typeof EduAlert !== 'undefined' && typeof EduAlert.toast === 'function') {
-                                EduAlert.toast('{$type}', {$msg_js});
+                                EduAlert.toast('{$type}', {$msgJs});
                             }
                         }
                         if (document.readyState === 'loading') {

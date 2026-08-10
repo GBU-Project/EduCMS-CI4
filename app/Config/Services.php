@@ -33,4 +33,16 @@ class Services extends BaseService
 
         return new \App\Libraries\RbacNative();
     }
+
+    /**
+     * Native Auth service for CI4 controllers.
+     */
+    public static function auth(bool $getShared = true)
+    {
+        if ($getShared) {
+            return static::getSharedInstance('auth');
+        }
+
+        return new \App\Libraries\AuthNative();
+    }
 }

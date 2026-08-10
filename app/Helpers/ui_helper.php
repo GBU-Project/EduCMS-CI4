@@ -75,11 +75,6 @@ if (!function_exists('eduform_input')) {
         
         $error_class = '';
         $error_feedback = '';
-        $CI = get_instance();
-        if (isset($CI->form_validation) && $CI->form_validation->error($name)) {
-            $error_class = ' is-invalid';
-            $error_feedback = '<div class="invalid-feedback">' . $CI->form_validation->error($name) . '</div>';
-        }
         
         return '
         <div class="form-group mb-3">
@@ -105,11 +100,6 @@ if (!function_exists('eduform_textarea')) {
         
         $error_class = '';
         $error_feedback = '';
-        $CI = get_instance();
-        if (isset($CI->form_validation) && $CI->form_validation->error($name)) {
-            $error_class = ' is-invalid';
-            $error_feedback = '<div class="invalid-feedback">' . $CI->form_validation->error($name) . '</div>';
-        }
         
         return '
         <div class="form-group mb-3">
@@ -132,11 +122,6 @@ if (!function_exists('eduform_select')) {
         
         $error_class = '';
         $error_feedback = '';
-        $CI = get_instance();
-        if (isset($CI->form_validation) && $CI->form_validation->error($name)) {
-            $error_class = ' is-invalid';
-            $error_feedback = '<div class="invalid-feedback">' . $CI->form_validation->error($name) . '</div>';
-        }
         
         $options_html = '';
         foreach ($options_list as $val => $text) {
@@ -207,11 +192,6 @@ if (!function_exists('eduform_file')) {
 
         $error_class = '';
         $error_feedback = '';
-        $CI = get_instance();
-        if (isset($CI->form_validation) && $CI->form_validation->error($name)) {
-            $error_class = ' is-invalid';
-            $error_feedback = '<div class="invalid-feedback">' . $CI->form_validation->error($name) . '</div>';
-        }
 
         // Picker only makes sense for image fields — Media_model::get_images()
         // only ever returns image/* rows, so a non-image field (accept

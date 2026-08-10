@@ -94,7 +94,7 @@ if (!function_exists('upload_media')) {
      * Upload files securely and register them inside the Media Library
      */
     function upload_media($field_name, $subfolder = 'temporary', $allowed_types = 'jpg|jpeg|png|gif|pdf|docx|xlsx|zip', $max_size = 5120) {
-        $CI = get_instance();
+        $db = \Config\Database::connect();
         
         if (!isset($_FILES[$field_name]) || empty($_FILES[$field_name]['name'])) {
             return array('status' => FALSE, 'error' => 'Tidak ada file yang dipilih untuk diunggah.');
@@ -106,10 +106,12 @@ if (!function_exists('upload_media')) {
         $checksum = hash_file('sha256', $temp_path);
 
         // 2. Prevent Redundant Physical Uploads (Compare Checksum)
-        if ($CI->db->table_exists('media_library')) {
-            $CI->db->where('checksum', $checksum);
-            $CI->db->where('deleted_at', NULL);
-            $existing = $CI->db->get('media_library')->row();
+        if ($db->tableExists('media_library')) {
+            $existing = $db->table('media_library')
+                ->where('checksum', $checksum)
+                ->where('deleted_at', NULL)
+                ->get()
+                ->getRow();
 
             if ($existing) {
                 // Verify physical file exists on server
