@@ -103,7 +103,7 @@
 
                 <!-- Desktop Navigation Menu (100% dynamic — sourced from Menu Builder / `menus` table) -->
                 <div class="hidden md:flex items-center space-x-6">
-                    <?php echo render_menu_desktop($header_menu, $current_path ?? ''); ?>
+                    <?php echo render_menu_desktop($header_menu ?? [], $current_path ?? ''); ?>
 
                     <a href="<?php echo base_url('admin/login'); ?>" class="inline-flex items-center space-x-2 bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-xl text-sm font-medium shadow-lg shadow-indigo-100 transition">
                         <i data-lucide="log-in" class="w-4 h-4"></i>
@@ -122,7 +122,7 @@
 
         <!-- Mobile Navigation Panel (100% dynamic) -->
         <div id="mobile-menu-panel" class="hidden md:hidden border-t border-slate-100 bg-white px-4 py-3 space-y-1">
-            <?php echo render_menu_mobile($header_menu); ?>
+            <?php echo render_menu_mobile($header_menu ?? []); ?>
             <a href="<?php echo base_url('admin/login'); ?>" class="block px-4 py-2.5 text-sm font-medium text-indigo-600 hover:bg-indigo-50 rounded-lg transition">Admin Panel</a>
         </div>
     </nav>

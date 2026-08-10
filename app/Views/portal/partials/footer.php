@@ -19,7 +19,7 @@
             <div class="space-y-4">
                 <h4 class="text-white font-semibold text-sm">Tautan Cepat</h4>
                 <ul class="space-y-2 text-sm">
-                    <?php echo render_menu_footer($footer_menu); ?>
+                    <?php echo render_menu_footer($footer_menu ?? []); ?>
                 </ul>
             </div>
             <div class="space-y-4">

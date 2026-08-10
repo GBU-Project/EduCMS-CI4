@@ -59,7 +59,11 @@ class Cookie extends BaseConfig
     public function __construct()
     {
         parent::__construct();
-        $this->secure = (defined('ENVIRONMENT') && ENVIRONMENT === 'production');
+        $isHttps = (isset($_SERVER['HTTPS']) && strtolower($_SERVER['HTTPS']) !== 'off')
+            || (isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && strtolower($_SERVER['HTTP_X_FORWARDED_PROTO']) === 'https')
+            || (isset($_SERVER['SERVER_PORT']) && (int) $_SERVER['SERVER_PORT'] === 443);
+
+        $this->secure = (defined('ENVIRONMENT') && ENVIRONMENT === 'production' && $isHttps);
     }
 
     /**
