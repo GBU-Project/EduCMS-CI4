@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="csrf-token-name" content="<?php echo $this->security->get_csrf_token_name(); ?>">
-    <meta name="csrf-token-value" content="<?php echo $this->security->get_csrf_hash(); ?>">
+    <meta name="csrf-token-name" content="<?php echo csrf_token(); ?>">
+    <meta name="csrf-token-value" content="<?php echo csrf_hash(); ?>">
     <title><?php echo isset($title) ? esc_html($title) : 'Admin Panel'; ?> | <?php echo esc_html(site_name()); ?></title>
     <?php if (site_favicon()): ?>
     <link rel="icon" type="image/x-icon" href="<?php echo esc_attr(site_favicon()); ?>">

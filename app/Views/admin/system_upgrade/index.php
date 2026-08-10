@@ -41,7 +41,7 @@
                     </ul>
 
                     <form action="<?php echo base_url('admin/system-upgrade/run'); ?>" method="post" id="upgrade-form">
-                        <?php echo $this->security->get_csrf_token_name() ? '<input type="hidden" name="' . $this->security->get_csrf_token_name() . '" value="' . $this->security->get_csrf_hash() . '">' : ''; ?>
+                        <?php echo csrf_field(); ?>
                         <button type="submit" class="btn btn-indigo btn-lg" id="upgrade-btn">
                             <?php echo render_icon('arrows-rotate', 'mr-1'); ?> Upgrade Database Sekarang
                         </button>

@@ -2,85 +2,86 @@
 
 namespace App\Controllers;
 
-use \MY_Controller;
-class Auth extends MY_Controller {
+class Auth extends BaseController
+{
+    public function login()
+    {
+        /** @var \App\Libraries\AuthNative $auth */
+        $auth = service('auth');
 
-    public function __construct() {
-        parent::__construct();
-        $this->load->library('form_validation');
-        $this->load->library('auth_lib', NULL, 'auth');
-    }
-
-    /**
-     * Handle Login Form Render and Submission
-     */
-    public function login() {
-        // Redirect to dashboard if already authenticated
-        if ($this->auth->is_logged_in()) {
-            redirect('admin');
+        if ($auth->is_logged_in()) {
+            return redirect()->to(base_url('admin'));
         }
 
-        // Set Validation Rules
-        $this->form_validation->set_rules('identity', 'Username atau Email', 'required|trim');
-        $this->form_validation->set_rules('password', 'Password', 'required');
+        if ($this->request->getMethod() === 'post') {
+            $identity = $this->request->getPost('identity');
+            $password = $this->request->getPost('password');
+            $remember = (bool) $this->request->getPost('remember');
 
-        if ($this->form_validation->run() === TRUE) {
-            $identity = $this->input->post('identity');
-            $password = $this->input->post('password');
-            $remember = (bool) $this->input->post('remember');
-
-            if ($this->auth->login($identity, $password, $remember)) {
-                // Retrieve pending redirection url
-                $redirect = $this->session->userdata('redirect_to');
-                $this->session->unset_userdata('redirect_to');
-                
-                redirect($redirect ? $redirect : 'admin');
-            } else {
-                $this->session->set_flashdata('error', 'Username/Email atau Password salah.');
-                redirect('admin/login');
+            if (empty($identity) || empty($password)) {
+                session()->setFlashdata('error', 'Username/Email dan Password wajib diisi.');
+                return view('auth/login');
             }
-        } else {
-            // Render View
-            $this->load->view('auth/login');
+
+            $loginResult = $auth->login($identity, $password, $remember);
+
+            if ($loginResult === 'DEFAULT_CREDENTIALS') {
+                session()->setFlashdata('error', 'Password default belum diubah demi keamanan. Silakan ubah password terlebih dahulu.');
+                return view('auth/login');
+            }
+
+            if ($loginResult) {
+                $redirectTo = session()->get('redirect_to');
+                session()->remove('redirect_to');
+
+                return redirect()->to(base_url($redirectTo ? $redirectTo : 'admin'));
+            }
+
+            session()->setFlashdata('error', 'Username/Email atau Password salah.');
+            return redirect()->to(base_url('admin/login'));
         }
+
+        return view('auth/login');
     }
 
-    /**
-     * Terminate user session
-     */
-    public function logout() {
-        $this->auth->logout();
-        redirect('admin/login');
+    public function logout()
+    {
+        /** @var \App\Libraries\AuthNative $auth */
+        $auth = service('auth');
+        $auth->logout();
+
+        return redirect()->to(base_url('admin/login'));
     }
 
-    /**
-     * Handle Password Recovery Requests
-     */
-    public function forgot() {
-        // Set validation rules
-        $this->form_validation->set_rules('email', 'Alamat Email', 'required|valid_email|trim');
+    public function forgot()
+    {
+        if ($this->request->getMethod() === 'post') {
+            $email = $this->request->getPost('email');
 
-        if ($this->form_validation->run() === TRUE) {
-            $email = $this->input->post('email');
-            
-            $exists = FALSE;
-            if ($this->db->table_exists('users')) {
-                $query = $this->db->get_where('users', array('email' => $email, 'deleted_at' => NULL));
-                $exists = ($query->num_rows() > 0);
+            if (empty($email) || ! filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                session()->setFlashdata('error', 'Alamat email tidak valid.');
+                return view('auth/forgot');
+            }
+
+            $db     = \Config\Database::connect();
+            $exists = false;
+
+            if ($db->tableExists('users')) {
+                $row    = $db->table('users')->where('email', $email)->where('deleted_at', null)->get()->getRow();
+                $exists = (bool) $row;
             } else {
-                // Mock fallback email
                 $exists = ($email === 'admin@educms.local');
             }
 
             if ($exists) {
-                // In production, send a reset email token here
-                $this->session->set_flashdata('success', 'Instruksi pemulihan sandi telah dikirim ke email Anda.');
+                session()->setFlashdata('success', 'Instruksi pemulihan sandi telah dikirim ke email Anda.');
             } else {
-                $this->session->set_flashdata('error', 'Email tidak ditemukan dalam sistem kami.');
+                session()->setFlashdata('error', 'Email tidak ditemukan dalam sistem kami.');
             }
-            redirect('admin/forgot');
-        } else {
-            $this->load->view('auth/forgot');
+
+            return redirect()->to(base_url('admin/forgot'));
         }
+
+        return view('auth/forgot');
     }
 }

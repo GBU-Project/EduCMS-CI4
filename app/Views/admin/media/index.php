@@ -195,8 +195,8 @@
 
         function submitBulkDelete($checkedItems) {
             var bulkUrl = '<?php echo base_url("admin/media/bulk_delete"); ?>';
-            var cName   = $('meta[name="csrf-token-name"]').attr('content') || '<?php echo $this->security->get_csrf_token_name(); ?>';
-            var cVal    = $('meta[name="csrf-token-value"]').attr('content') || '<?php echo $this->security->get_csrf_hash(); ?>';
+            var cName   = $('meta[name="csrf-token-name"]').attr('content') || '<?php echo csrf_token(); ?>';
+            var cVal    = $('meta[name="csrf-token-value"]').attr('content') || '<?php echo csrf_hash(); ?>';
 
             var ids = [];
             $checkedItems.each(function() {
