@@ -51,8 +51,14 @@ class Roles extends BaseController
 
             if ($insertId) {
                 $permIds = $this->request->getPost('permission_ids');
-                if (! empty($permIds) && is_array($permIds)) {
-                    $this->roleModel->saveRolePermissions((int) $insertId, $permIds);
+                $permIdsArray = is_array($permIds) ? $permIds : [];
+                $secError = $this->checkPermissionAssignmentSecurity($permIdsArray);
+                if ($secError) {
+                    return $secError;
+                }
+
+                if (! empty($permIdsArray)) {
+                    $this->roleModel->saveRolePermissions((int) $insertId, $permIdsArray);
                 }
 
                 $this->logActivity('Roles', 'create', null, json_encode(['id' => $insertId, 'name' => $postData['name']]));
@@ -84,10 +90,15 @@ class Roles extends BaseController
                 return $this->_renderEditView($id, $row);
             }
 
-            $this->roleModel->update($id, $postData);
-
             $permIds = $this->request->getPost('permission_ids');
-            $this->roleModel->saveRolePermissions((int) $id, is_array($permIds) ? $permIds : []);
+            $permIdsArray = is_array($permIds) ? $permIds : [];
+            $secError = $this->checkPermissionAssignmentSecurity($permIdsArray);
+            if ($secError) {
+                return $secError;
+            }
+
+            $this->roleModel->update($id, $postData);
+            $this->roleModel->saveRolePermissions((int) $id, $permIdsArray);
 
             $this->logActivity('Roles', 'update', json_encode($row), json_encode($postData));
             session()->setFlashdata('success', 'Role berhasil diperbarui.');
@@ -199,5 +210,41 @@ class Roles extends BaseController
             $logger = new \Logger();
             $logger->log($userId, $module, $action, $oldValue, $newValue);
         }
+    }
+
+    protected function checkPermissionAssignmentSecurity(array $permIds)
+    {
+        $actorId = (int) session()->get('user_id');
+        /** @var \App\Libraries\RbacNative $rbac */
+        $rbac = service('rbac');
+        $isActorSuperAdmin = $rbac->is_super_admin($actorId);
+
+        if ($isActorSuperAdmin || empty($permIds)) {
+            return null;
+        }
+
+        $actorPermissions = $rbac->get_user_permissions($actorId);
+        $db = \Config\Database::connect();
+        if ($db->tableExists('permissions')) {
+            $requestedPerms = $db->table('permissions')
+                ->whereIn('id', array_map('intval', $permIds))
+                ->get()
+                ->getResult();
+
+            foreach ($requestedPerms as $perm) {
+                if (! in_array($perm->name, $actorPermissions, true)) {
+                    $this->logActivity('Roles', 'permission_escalation_denied', null, json_encode([
+                        'actor_id' => $actorId,
+                        'unauthorized_perm' => $perm->name,
+                    ]));
+                    if ($this->request->isAJAX()) {
+                        return $this->response->setStatusCode(403)->setJSON(['error' => 'Anda hanya dapat memberikan permission yang Anda miliki.']);
+                    }
+                    return $this->response->setStatusCode(403)->setBody(view('errors/html/error_403', ['message' => 'Anda hanya dapat memberikan permission yang Anda miliki.']));
+                }
+            }
+        }
+
+        return null;
     }
 }

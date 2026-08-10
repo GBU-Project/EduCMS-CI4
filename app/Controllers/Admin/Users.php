@@ -68,6 +68,10 @@ class Users extends BaseController
             if ($insertId) {
                 $roleIds = $this->request->getPost('role_ids');
                 if (! empty($roleIds) && is_array($roleIds)) {
+                    $secError = $this->checkRoleAssignmentSecurity(null, $roleIds);
+                    if ($secError) {
+                        return $secError;
+                    }
                     $this->userModel->saveUserRoles((int) $insertId, $roleIds);
                 }
 
@@ -111,10 +115,15 @@ class Users extends BaseController
                 return $this->_renderEditView($id, $row);
             }
 
-            $this->userModel->update($id, $postData);
-
             $roleIds = $this->request->getPost('role_ids');
-            $this->userModel->saveUserRoles((int) $id, is_array($roleIds) ? $roleIds : []);
+            $roleIdsArray = is_array($roleIds) ? $roleIds : [];
+            $secError = $this->checkRoleAssignmentSecurity((int) $id, $roleIdsArray);
+            if ($secError) {
+                return $secError;
+            }
+
+            $this->userModel->update($id, $postData);
+            $this->userModel->saveUserRoles((int) $id, $roleIdsArray);
 
             $this->logActivity('Users', 'update', json_encode($row), json_encode($postData));
             session()->setFlashdata('success', 'Pengguna berhasil diperbarui.');
@@ -238,5 +247,53 @@ class Users extends BaseController
             $logger = new \Logger();
             $logger->log($userId, $module, $action, $oldValue, $newValue);
         }
+    }
+
+    protected function checkRoleAssignmentSecurity(?int $targetUserId, array $roleIds)
+    {
+        $actorId = (int) session()->get('user_id');
+        /** @var \App\Libraries\RbacNative $rbac */
+        $rbac = service('rbac');
+        $isActorSuperAdmin = $rbac->is_super_admin($actorId);
+
+        if ($isActorSuperAdmin) {
+            return null; // Super admin can assign any role
+        }
+
+        // Non-Super-Admin editing self cannot modify roles at all
+        if ($targetUserId !== null && (int) $targetUserId === $actorId && ! empty($roleIds)) {
+            $this->logActivity('Users', 'escalation_attempt_denied', null, json_encode(['actor_id' => $actorId, 'target_id' => $targetUserId, 'reason' => 'self_edit_roles_forbidden']));
+            return $this->renderSecurityError('Self-edit role tidak diperbolehkan.');
+        }
+
+        // Check if any role in $roleIds is Super Admin
+        if (! empty($roleIds)) {
+            $db = \Config\Database::connect();
+            if ($db->tableExists('roles')) {
+                $superAdminRoles = $db->table('roles')
+                    ->whereIn('name', ['Super Admin', 'admin'])
+                    ->where('deleted_at', null)
+                    ->get()
+                    ->getResult();
+                $superAdminRoleIds = array_map(static fn ($r) => (int) $r->id, $superAdminRoles);
+
+                foreach ($roleIds as $rId) {
+                    if (in_array((int) $rId, $superAdminRoleIds, true)) {
+                        $this->logActivity('Users', 'escalation_attempt_denied', null, json_encode(['actor_id' => $actorId, 'target_id' => $targetUserId, 'attempted_role_id' => $rId]));
+                        return $this->renderSecurityError('Anda tidak memiliki hak akses untuk menetapkan role Super Admin.');
+                    }
+                }
+            }
+        }
+
+        return null;
+    }
+
+    protected function renderSecurityError(string $message)
+    {
+        if ($this->request->isAJAX()) {
+            return $this->response->setStatusCode(403)->setJSON(['error' => $message]);
+        }
+        return $this->response->setStatusCode(403)->setBody(view('errors/html/error_403', ['message' => $message]));
     }
 }
