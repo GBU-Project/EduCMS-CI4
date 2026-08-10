@@ -52,7 +52,6 @@ class Filters extends BaseFilters
      */
     public array $required = [
         'before' => [
-            'forcehttps', // Force Global Secure Requests
             'pagecache',  // Web Page Caching
         ],
         'after' => [
@@ -108,7 +107,11 @@ class Filters extends BaseFilters
     public array $filters = [
         'perm' => [
             'before' => ['admin', 'admin/*'],
-            'except' => ['admin/login', 'admin/logout', 'admin/forgot'],
+            'except' => [
+                'admin/login',
+                'admin/logout',
+                'admin/forgot',
+            ],
         ],
     ];
 }

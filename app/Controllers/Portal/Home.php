@@ -151,7 +151,7 @@ class Home extends BaseController
     protected function loadSeo(string $pageName, string $fallbackDescription = ''): array
     {
         $db  = \Config\Database::connect();
-        $seo = $db->table('seo_settings')->where('page_name', $pageName)->get()->getRow();
+        $seo = $db->tableExists('seo_settings') ? $db->table('seo_settings')->where('page_name', $pageName)->get()->getRow() : null;
 
         return [
             'meta_title'       => $seo->meta_title ?? '',

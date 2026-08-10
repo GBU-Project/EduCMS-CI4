@@ -10,6 +10,11 @@ class PermissionFilter implements FilterInterface
 {
     public function before(RequestInterface $request, $arguments = null)
     {
+        $uriPath = trim($request->getUri()->getPath(), '/');
+        if (in_array($uriPath, ['admin/login', 'admin/logout', 'admin/forgot'], true)) {
+            return;
+        }
+
         $session = session();
         $userId  = $session->get('user_id');
 

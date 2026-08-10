@@ -17,7 +17,7 @@ class AuthNative
 
     public function is_logged_in(): bool
     {
-        return session()->has('user_id') && session()->get('user_id') > 0;
+        return session()->has('user_id') && (int) session()->get('user_id') > 0;
     }
 
     public function login(string $identity, string $password, bool $remember = false)

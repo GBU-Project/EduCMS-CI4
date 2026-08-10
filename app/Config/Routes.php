@@ -24,9 +24,9 @@ $routes->set404Override('App\Controllers\Main::error_404');
 // -------------------------------------------------------------------------
 // Auth Routes
 // -------------------------------------------------------------------------
-$routes->add('admin/login', 'Auth::login');
-$routes->add('admin/logout', 'Auth::logout');
-$routes->add('admin/forgot', 'Auth::forgot');
+$routes->match(['GET', 'POST'], 'admin/login', 'Auth::login');
+$routes->match(['GET', 'POST'], 'admin/logout', 'Auth::logout');
+$routes->match(['GET', 'POST'], 'admin/forgot', 'Auth::forgot');
 
 // -------------------------------------------------------------------------
 // Admin Routes

@@ -34,7 +34,11 @@ class Auth extends BaseController
                 $redirectTo = session()->get('redirect_to');
                 session()->remove('redirect_to');
 
-                return redirect()->to(base_url($redirectTo ? $redirectTo : 'admin'));
+                if ($redirectTo && trim($redirectTo, '/') !== 'admin/login') {
+                    return redirect()->to(base_url($redirectTo));
+                }
+
+                return redirect()->to(base_url('admin'));
             }
 
             session()->setFlashdata('error', 'Username/Email atau Password salah.');
