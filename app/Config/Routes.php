@@ -22,11 +22,14 @@ $routes->get('/', 'Portal\Home::index');
 $routes->set404Override('App\Controllers\Main::error_404');
 
 // -------------------------------------------------------------------------
-// Auth Routes
+// Auth Routes (Explicit Priority)
 // -------------------------------------------------------------------------
-$routes->match(['GET', 'POST'], 'admin/login', 'Auth::login');
-$routes->match(['GET', 'POST'], 'admin/logout', 'Auth::logout');
-$routes->match(['GET', 'POST'], 'admin/forgot', 'Auth::forgot');
+$routes->get('admin/login', 'Auth::login');
+$routes->post('admin/login', 'Auth::login');
+$routes->get('admin/logout', 'Auth::logout');
+$routes->post('admin/logout', 'Auth::logout');
+$routes->get('admin/forgot', 'Auth::forgot');
+$routes->post('admin/forgot', 'Auth::forgot');
 
 // -------------------------------------------------------------------------
 // Admin Routes
@@ -272,9 +275,11 @@ $routes->group('admin/messages', ['namespace' => 'App\Controllers\Admin'], stati
 });
 
 // Dashboard module (Native CI4)
-$routes->group('admin', ['namespace' => 'App\Controllers\Admin'], static function ($routes) {
+$routes->get('admin', static function () {
+    return redirect()->to(base_url('admin/dashboard'));
+});
+$routes->group('admin/dashboard', ['namespace' => 'App\Controllers\Admin'], static function ($routes) {
     $routes->get('/', 'Dashboard::index', ['filter' => 'perm:dashboard.view']);
-    $routes->get('dashboard', 'Dashboard::index', ['filter' => 'perm:dashboard.view']);
 });
 
 // Backup / Database Manager module (Native CI4)
