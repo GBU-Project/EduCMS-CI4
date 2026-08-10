@@ -31,10 +31,6 @@ $routes->add('admin/forgot', 'Auth::forgot');
 // -------------------------------------------------------------------------
 // Admin Routes
 // -------------------------------------------------------------------------
-$routes->add('admin', 'Admin\Dashboard::index');
-$routes->add('admin/styleguide', 'Admin\Styleguide::index');
-$routes->add('admin/media/bulk_delete', 'Admin\Media::bulk_delete');
-$routes->add('admin/media/bulk-delete', 'Admin\Media::bulk_delete');
 
 // Redirects module (Native CI4)
 $routes->group('admin/redirects', ['namespace' => 'App\Controllers\Admin'], static function ($routes) {

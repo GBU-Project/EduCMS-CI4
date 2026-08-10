@@ -104,8 +104,11 @@ class Filters extends BaseFilters
      *
      * Example:
      * 'isLoggedIn' => ['before' => ['account/*', 'profiles/*']]
-     *
-     * @var array<string, array<string, list<string>>>
      */
-    public array $filters = [];
+    public array $filters = [
+        'perm' => [
+            'before' => ['admin', 'admin/*'],
+            'except' => ['admin/login', 'admin/logout', 'admin/forgot'],
+        ],
+    ];
 }
