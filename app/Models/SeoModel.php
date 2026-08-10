@@ -6,14 +6,14 @@ use CodeIgniter\Model;
 
 class SeoModel extends Model
 {
-    protected $table            = 'seo_metadata';
+    protected $table            = 'seo_settings';
     protected $primaryKey       = 'id';
     protected $useAutoIncrement = true;
     protected $returnType       = 'object';
     protected $useSoftDeletes   = true;
 
     protected $allowedFields    = [
-        'page_identifier',
+        'page_name',
         'meta_title',
         'meta_description',
         'keywords',
@@ -30,22 +30,22 @@ class SeoModel extends Model
     protected $updatedField  = 'updated_at';
     protected $deletedField  = 'deleted_at';
 
-    public function getSeo(string $pageIdentifier)
+    public function getSeo(string $pageName)
     {
-        if (empty($pageIdentifier)) {
+        if (empty($pageName)) {
             return null;
         }
 
-        return $this->where('page_identifier', $pageIdentifier)->first();
+        return $this->where('page_name', $pageName)->first();
     }
 
-    public function saveSeo(string $pageIdentifier, array $seoData)
+    public function saveSeo(string $pageName, array $seoData)
     {
-        if (empty($pageIdentifier)) {
+        if (empty($pageName)) {
             return false;
         }
 
-        $existing = $this->getSeo($pageIdentifier);
+        $existing = $this->getSeo($pageName);
 
         $data = [
             'meta_title'       => $seoData['meta_title'] ?? null,
@@ -64,8 +64,8 @@ class SeoModel extends Model
             return $this->update($existing->id, $data);
         }
 
-        $data['page_identifier'] = $pageIdentifier;
-        $data['created_at']      = date('Y-m-d H:i:s');
+        $data['page_name']  = $pageName;
+        $data['created_at'] = date('Y-m-d H:i:s');
         return $this->insert($data);
     }
 }

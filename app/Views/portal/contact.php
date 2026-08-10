@@ -1,4 +1,4 @@
-<?php $this->load->view('portal/partials/header'); ?>
+<?php echo view('portal/partials/header'); ?>
 
 <main class="flex-grow max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 w-full">
 
@@ -126,4 +126,4 @@
     </div>
 </main>
 
-<?php $this->load->view('portal/partials/footer'); ?>
+<?php echo view('portal/partials/footer'); ?>

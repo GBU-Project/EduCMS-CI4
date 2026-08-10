@@ -130,7 +130,7 @@
             <i class="fa-solid fa-circle-user fa-3x mb-2 text-white"></i>
             <p>
               <?php echo esc_html($current_user->full_name); ?>
-              <small class="d-block text-white-50 mt-1"><?php echo esc_html($this->session->userdata('role_name')); ?></small>
+              <small class="d-block text-white-50 mt-1"><?php echo esc_html((string) session()->get('role_name')); ?></small>
             </p>
           </li>
           <!-- Menu Footer-->

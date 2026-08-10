@@ -162,7 +162,7 @@ if (!empty($homepage_sections)):
             case 'videos':
                 if (!$main_opened) { echo '<main class="flex-grow w-full">'; $main_opened = TRUE; }
                 if (!empty($show_video_section) && !empty($videos)):
-                    $this->load->helper('video');
+                    
 ?>
 <section class="bg-white py-16">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">

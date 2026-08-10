@@ -1,4 +1,4 @@
-<?php $this->load->view('portal/partials/header');
+<?php echo view('portal/partials/header');
 $now = date('Y-m-d H:i:s');
 $upcoming = array();
 $past = array();
@@ -63,4 +63,4 @@ foreach ($agendas as $item) {
     <?php endif; ?>
 </main>
 
-<?php $this->load->view('portal/partials/footer'); ?>
+<?php echo view('portal/partials/footer'); ?>

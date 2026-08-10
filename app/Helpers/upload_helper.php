@@ -142,90 +142,78 @@ if (!function_exists('upload_media')) {
         }
 
         // 3. Process New File Upload
-        $subfolder = trim($subfolder, '/');
-        $target_dir = './uploads/' . $subfolder;
-        if (!is_dir($target_dir)) {
-            mkdir($target_dir, 0755, TRUE);
+        $subfolder  = trim($subfolder, '/');
+        $target_dir = FCPATH . 'uploads/' . $subfolder;
+        if (! is_dir($target_dir)) {
+            mkdir($target_dir, 0755, true);
         }
         _upload_helper_ensure_no_execute_htaccess($target_dir);
 
-        $original_name = $_FILES[$field_name]['name'];
+        $request = \Config\Services::request();
+        $file    = $request->getFile($field_name);
 
-        // Browsers/OSes (very commonly on Windows, with filenames that
-        // went through WhatsApp/Google Drive/renaming with special
-        // characters) can send a filename that is NOT valid UTF-8. If that
-        // raw string is later passed to json_encode() (e.g. building the
-        // JSON response for the uploader, or the media picker), json_encode
-        // silently returns false for the WHOLE payload — no exception, no
-        // log entry, just an empty response body — which is exactly the
-        // "upload gagal" symptom with no error message. Force it to valid
-        // UTF-8 here, once, at the source, so every downstream consumer
-        // (JSON response, DB insert) is guaranteed a safe string.
-        if (!mb_check_encoding($original_name, 'UTF-8')) {
+        if (! $file || ! $file->isValid()) {
+            return ['status' => false, 'error' => $file ? $file->getErrorString() : 'File upload gagal.'];
+        }
+
+        $original_name = $file->getClientName();
+
+        if (! mb_check_encoding($original_name, 'UTF-8')) {
             $original_name = mb_convert_encoding($original_name, 'UTF-8', 'UTF-8');
         }
-        // Belt-and-suspenders: mb_convert_encoding('UTF-8','UTF-8') on an
-        // already-broken string can still leave invalid sequences on some
-        // PHP builds. Strip anything that still isn't valid UTF-8.
         $original_name = htmlspecialchars_decode(htmlspecialchars($original_name, ENT_SUBSTITUTE | ENT_QUOTES, 'UTF-8'));
 
-        $ext = pathinfo($original_name, PATHINFO_EXTENSION);
-        // Generate a random UUID/hash disk name
-        $disk_name = md5(uniqid(rand(), TRUE)) . '.' . strtolower($ext);
+        $ext       = $file->getClientExtension();
+        $disk_name = md5(uniqid((string) rand(), true)) . '.' . strtolower($ext);
 
-        $config['upload_path']   = $target_dir;
-        $config['allowed_types'] = $allowed_types;
-        $config['max_size']      = $max_size;
-        $config['file_name']     = $disk_name;
-
-        $CI->load->library('upload');
-        $CI->upload->initialize($config);
-
-        if (!$CI->upload->do_upload($field_name)) {
-            return array('status' => FALSE, 'error' => $CI->upload->display_errors('', ''));
+        if (! $file->move($target_dir, $disk_name)) {
+            return ['status' => false, 'error' => $file->getErrorString()];
         }
 
-        $upload_data = $CI->upload->data();
+        $file_type = $file->getClientMimeType();
+        $file_size = $file->getSize();
 
-        // Check image resolutions if file is an image
-        $width = NULL;
-        $height = NULL;
-        if (strpos($upload_data['file_type'], 'image') !== FALSE) {
-            $width  = $upload_data['image_width'];
-            $height = $upload_data['image_height'];
+        $width  = null;
+        $height = null;
+        if (strpos($file_type, 'image') !== false) {
+            $image_info = @getimagesize($target_dir . '/' . $disk_name);
+            if ($image_info) {
+                $width  = $image_info[0];
+                $height = $image_info[1];
+            }
         }
 
         // 4. Insert Registry Entry into media_library
-        $media_id = 0;
+        $media_id       = 0;
         $directory_path = 'uploads/' . $subfolder;
-        
-        $media_data = array(
+
+        $media_data = [
             'filename'    => $original_name,
             'disk_name'   => $disk_name,
             'directory'   => $directory_path,
             'extension'   => strtolower($ext),
-            'mime_type'   => $upload_data['file_type'],
+            'mime_type'   => $file_type,
             'width'       => $width,
             'height'      => $height,
-            'size'        => $upload_data['file_size'] * 1024, // Convert KB to Bytes
+            'size'        => $file_size,
             'checksum'    => $checksum,
-            'uploaded_by' => $CI->session->userdata('user_id'),
-            'created_at'  => date('Y-m-d H:i:s')
-        );
+            'uploaded_by' => session()->get('user_id'),
+            'created_at'  => date('Y-m-d H:i:s'),
+        ];
 
-        if ($CI->db->table_exists('media_library')) {
-            $CI->db->insert('media_library', $media_data);
-            $media_id = $CI->db->insert_id();
+        if ($db->tableExists('media_library')) {
+            $db->table('media_library')->insert($media_data);
+            $media_id = $db->insertID();
         }
 
-        return array(
-            'status'    => TRUE,
+        return [
+            'status'    => true,
             'file_name' => $original_name,
             'disk_name' => $disk_name,
             'file_path' => $directory_path . '/' . $disk_name,
-            'mime_type' => $upload_data['file_type'],
-            'file_size' => $upload_data['file_size'] * 1024,
-            'media_id'  => $media_id
-        );
+            'mime_type' => $file_type,
+            'file_size' => $file_size,
+            'media_id'  => $media_id,
+        ];
     }
 }

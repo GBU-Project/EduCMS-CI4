@@ -91,7 +91,7 @@ class Gallery extends BaseController
     protected function loadSeo(string $pageName, string $fallbackDescription = ''): array
     {
         $db = \Config\Database::connect();
-        $seo = $db->table('seo_metadata')->where('page_identifier', $pageName)->get()->getRow();
+        $seo = $db->table('seo_settings')->where('page_name', $pageName)->get()->getRow();
 
         return [
             'meta_title'       => $seo->meta_title ?? '',

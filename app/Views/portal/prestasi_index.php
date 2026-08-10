@@ -1,4 +1,4 @@
-<?php $this->load->view('portal/partials/header');
+<?php echo view('portal/partials/header');
 $level_labels = array('kecamatan' => 'Kecamatan', 'kabupaten' => 'Kabupaten/Kota', 'provinsi' => 'Provinsi', 'nasional' => 'Nasional', 'internasional' => 'Internasional');
 $type_labels = array('academic' => 'Akademik', 'non-academic' => 'Non-Akademik');
 ?>
@@ -47,4 +47,4 @@ $type_labels = array('academic' => 'Akademik', 'non-academic' => 'Non-Akademik')
     <?php endif; ?>
 </main>
 
-<?php $this->load->view('portal/partials/footer'); ?>
+<?php echo view('portal/partials/footer'); ?>

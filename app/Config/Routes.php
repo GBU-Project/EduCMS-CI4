@@ -17,6 +17,8 @@ $routes->setTranslateURIDashes(true);
 // route per controller action.
 $routes->setAutoRoute(false);
 
+$routes->get('/', 'Portal\Home::index');
+
 $routes->set404Override('App\Controllers\Main::error_404');
 
 // -------------------------------------------------------------------------

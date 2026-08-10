@@ -1,4 +1,4 @@
-<?php $this->load->helper('video');
+<?php 
 $platform_labels = array('youtube' => 'YouTube', 'vimeo' => 'Vimeo', 'facebook' => 'Facebook', 'tiktok' => 'TikTok', 'other' => 'Lainnya');
 ?>
 <div class="content-header"><div class="container-fluid"><div class="row mb-2 align-items-center">

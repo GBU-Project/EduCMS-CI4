@@ -1,5 +1,5 @@
-<?php $this->load->view('portal/partials/header');
-$this->load->helper('video');
+<?php echo view('portal/partials/header');
+
 $platform_labels = array('youtube' => 'YouTube', 'vimeo' => 'Vimeo', 'facebook' => 'Facebook', 'tiktok' => 'TikTok', 'other' => 'Lainnya');
 
 // Embed resolution: YouTube URLs are transformed into a proper embed
@@ -84,4 +84,4 @@ if ($item->platform === 'youtube') {
     </div>
 </main>
 
-<?php $this->load->view('portal/partials/footer'); ?>
+<?php echo view('portal/partials/footer'); ?>

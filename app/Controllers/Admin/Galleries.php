@@ -339,7 +339,7 @@ class Galleries extends BaseController
     protected function _renderEditView($id, $row)
     {
         $db = \Config\Database::connect();
-        $seo = $db->table('seo_metadata')->where('page_identifier', 'gallery_album_' . $id)->get()->getRow();
+        $seo = $db->table('seo_settings')->where('page_name', 'gallery_album_' . $id)->get()->getRow();
 
         $data = [
             'row'         => $row,
@@ -386,10 +386,10 @@ class Galleries extends BaseController
 
         if (! empty($metaTitle) || ! empty($metaDesc) || ! empty($keywords)) {
             $db = \Config\Database::connect();
-            $existing = $db->table('seo_metadata')->where('page_identifier', $pageIdentifier)->get()->getRow();
+            $existing = $db->table('seo_settings')->where('page_name', $pageIdentifier)->get()->getRow();
 
             $seoData = [
-                'page_identifier'  => $pageIdentifier,
+                'page_name'  => $pageIdentifier,
                 'meta_title'       => $metaTitle,
                 'meta_description' => $metaDesc,
                 'keywords'         => $keywords,
@@ -397,10 +397,10 @@ class Galleries extends BaseController
             ];
 
             if ($existing) {
-                $db->table('seo_metadata')->where('id', $existing->id)->update($seoData);
+                $db->table('seo_settings')->where('id', $existing->id)->update($seoData);
             } else {
                 $seoData['created_at'] = date('Y-m-d H:i:s');
-                $db->table('seo_metadata')->insert($seoData);
+                $db->table('seo_settings')->insert($seoData);
             }
         }
     }

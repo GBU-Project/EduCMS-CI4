@@ -1,4 +1,4 @@
-<?php $this->load->view('portal/partials/header'); ?>
+<?php echo view('portal/partials/header'); ?>
 
 <main class="flex-grow max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-12 w-full">
     <nav class="text-sm text-slate-500 mb-6 flex items-center space-x-2">
@@ -20,7 +20,7 @@
     </div>
 
     <div class="prose prose-slate max-w-none prose-headings:font-bold prose-a:text-indigo-600">
-        <?php $this->load->helper('sanitize'); echo sanitize_html($item->content); ?>
+        <?php echo sanitize_html($item->content); ?>
     </div>
 
     <div class="mt-10 pt-8 border-t border-slate-100">
@@ -31,4 +31,4 @@
     </div>
 </main>
 
-<?php $this->load->view('portal/partials/footer'); ?>
+<?php echo view('portal/partials/footer'); ?>

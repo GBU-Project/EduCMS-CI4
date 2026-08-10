@@ -1,4 +1,4 @@
-<?php $this->load->view('portal/partials/header'); ?>
+<?php echo view('portal/partials/header'); ?>
 
 <main class="flex-grow max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 w-full">
     <nav class="text-sm text-slate-500 mb-6 flex items-center space-x-2">
@@ -32,7 +32,7 @@
     <?php endif; ?>
 
     <div class="prose prose-slate max-w-none prose-headings:font-bold prose-a:text-indigo-600">
-        <?php $this->load->helper('sanitize'); echo sanitize_html($post->content); ?>
+        <?php echo sanitize_html($post->content); ?>
     </div>
 
     <?php if (!empty($post->tags)): ?>
@@ -63,4 +63,4 @@
     </div>
 </main>
 
-<?php $this->load->view('portal/partials/footer'); ?>
+<?php echo view('portal/partials/footer'); ?>

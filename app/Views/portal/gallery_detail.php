@@ -1,4 +1,4 @@
-<?php $this->load->view('portal/partials/header'); ?>
+<?php echo view('portal/partials/header'); ?>
 
 <main class="flex-grow max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12 w-full">
     <nav class="text-sm text-slate-500 mb-6 flex items-center space-x-2">
@@ -22,7 +22,6 @@
     <?php elseif ($album->type === 'video'): ?>
         <div class="grid md:grid-cols-2 gap-8">
             <?php foreach ($items as $it): ?>
-                <?php $this->load->helper('video'); ?>
                 <div class="rounded-2xl overflow-hidden bg-black aspect-video">
                     <?php if (stripos($it->file_path, '<iframe') !== FALSE): ?>
                         <?php echo strip_tags($it->file_path, '<iframe>'); ?>
@@ -53,4 +52,4 @@
     </div>
 </main>
 
-<?php $this->load->view('portal/partials/footer'); ?>
+<?php echo view('portal/partials/footer'); ?>

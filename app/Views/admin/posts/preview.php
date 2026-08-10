@@ -35,7 +35,7 @@
                     <?php endif; ?>
 
                     <div class="post-content px-2 py-1">
-                        <?php $this->load->helper('sanitize'); echo sanitize_html($post->content); // sanitized HTML content from editor ?>
+                        <?php echo sanitize_html($post->content); // sanitized HTML content from editor ?>
                     </div>
 
                     <?php if (!empty($post->tags)): ?>
