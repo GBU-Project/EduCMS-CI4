@@ -202,6 +202,12 @@ class Media extends BaseController
 
     protected function handleUpload($file, string $subfolder = 'media'): array
     {
+        $guard = new \App\Libraries\UploadGuard();
+        $validation = $guard->validateFile($file, 'media');
+        if (! $validation['status']) {
+            return $validation;
+        }
+
         $targetDir = FCPATH . 'uploads/' . $subfolder . '/';
         if (! is_dir($targetDir)) {
             mkdir($targetDir, 0755, true);
