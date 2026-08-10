@@ -8,7 +8,7 @@ Dokumen ini mencatat seluruh perbaikan temuan audit keamanan yang telah diselesa
 
 | No | Tingkat Keparahan | Temuan Audit | Commit Hash | Pesan Commit | Status Test |
 | :-: | :--- | :--- | :-: | :--- | :-: |
-| **1** | **KRITIS** | Eskalasi Hak Akses ke Super Admin via Users/Roles Management (`create` & `edit`) | `b9db786` | `fix(security): prevent privilege escalation to Super Admin via users/roles management` | `PASSED` |
+| **1** | **KRITIS** | Eskalasi Hak Akses ke Super Admin via Users/Roles Management (`create`, `edit`, & rename-swap) | `b9db786`<br>`2aa49d9` | `fix(security): prevent privilege escalation to Super Admin via users/roles management`<br>`fix(security): prevent privilege escalation via Super Admin role rename-swap and strengthen security tests` | `PASSED` |
 | **2** | **KRITIS** | Route Admin Tanpa Filter Otentikasi/Otorisasi (`/admin/*` fail-closed by default) | `5de5713` | `fix(security): require authentication on all /admin/* routes by default (fail-closed)` | `PASSED` |
 | **3** | **KRITIS** | Upload File Publik Tanpa Whitelist & Proteksi Eksekusi Script (PPDB Form) | `c1a01f2` | `fix(security): enforce upload allowlist and block PHP execution in public/uploads (PPDB form)` | `PASSED` |
 | **4** | **KRITIS** | Upload File Admin Tanpa Whitelist Ekstensi (Media Library) | `0c53a99` | `refactor(security): extract shared upload validation guard and apply to Media controller` | `PASSED` |
@@ -20,11 +20,13 @@ Dokumen ini mencatat seluruh perbaikan temuan audit keamanan yang telah diselesa
 
 ## Rincian Perubahan & Pengamanan
 
-### 1. Proteksi Privilege Escalation (Commit `b9db786`)
+### 1. Proteksi Privilege Escalation & Rename-Swap (Commit `b9db786` & `2aa49d9`)
 - **`Users.php`**: `create()` dan `edit()` memeriksa apakah aktor yang sedang login (`session()->get('user_id')`) adalah Super Admin via `RbacNative::is_super_admin()`.
-  - Actor non-Super-Admin yang mencoba menetapkan role Super Admin pada akun manapun (baru, orang lain, atau diri sendiri) ditolak dengan HTTP 403 & dicatat di audit log (`escalation_attempt_denied`).
+  - Actor non-Super-Admin yang mencoba menetapkan role Super Admin (ID 1 atau role bernama `'Super Admin'`/`'admin'`) pada akun manapun (baru, orang lain, atau diri sendiri) langsung ditolak dengan HTTP 403 & dicatat di audit log (`escalation_attempt_denied`).
   - Self-edit role oleh actor non-Super-Admin diblokir total.
-- **`Roles.php`**: `create()` dan `edit()` membatasi permission yang dapat ditetapkan oleh actor non-Super-Admin hanya pada subset permission yang sudah mereka miliki.
+- **`Roles.php`**:
+  - **Penutupan Celah Rename-Swap (Commit `2aa49d9`)**: Actor non-Super-Admin diblokir dari mengubah/mengedit role yang bernama `'Super Admin'` / `'admin'`, serta diblokir dari merename role APAPUN menjadi `'Super Admin'` / `'admin'` (HTTP 403).
+  - `create()` dan `edit()` membatasi permission yang dapat ditetapkan oleh actor non-Super-Admin hanya pada subset permission yang sudah mereka miliki.
 
 ### 2. Failure-Closed Route Filtering (Commit `5de5713`)
 - Menghapus 4 baris un-filtered route di bagian awal `app/Config/Routes.php`.
