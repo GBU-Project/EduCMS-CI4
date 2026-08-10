@@ -49,13 +49,13 @@ if (! function_exists('redirect')) {
             }
 
             if ($rev !== false) {
-                $response = $response->route($route);
-            } else {
-                $response = $response->to($route);
+                return $response->route($route);
             }
+
+            return $response->to(base_url($route));
         }
 
-        throw new \CodeIgniter\HTTP\Exceptions\RedirectException($response);
+        return $response;
     }
 }
 

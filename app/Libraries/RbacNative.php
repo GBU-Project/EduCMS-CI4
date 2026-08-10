@@ -4,7 +4,7 @@ namespace App\Libraries;
 
 use CodeIgniter\Database\BaseConnection;
 
-class Rbac
+class RbacNative
 {
     protected BaseConnection $db;
 
