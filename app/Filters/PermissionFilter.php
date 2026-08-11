@@ -10,7 +10,7 @@ class PermissionFilter implements FilterInterface
 {
     public function before(RequestInterface $request, $arguments = null)
     {
-        $uriPath = trim($request->getUri()->getPath(), '/');
+        $uriPath = trim($request->getPath(), '/');
         if (in_array($uriPath, ['admin/login', 'admin/logout', 'admin/forgot'], true)) {
             return;
         }
@@ -24,7 +24,7 @@ class PermissionFilter implements FilterInterface
                     ->setStatusCode(401)
                     ->setJSON(['error' => 'Unauthorized']);
             }
-            $session->set('redirect_to', current_url());
+            $session->set('redirect_to', uri_string());
             return redirect()->to(base_url('admin/login'));
         }
 

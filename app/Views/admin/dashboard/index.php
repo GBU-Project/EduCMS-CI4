@@ -13,7 +13,7 @@
     </div>
 </div>
 
-<?php if (!empty($install_folder_exists) && isset($current_user) && $this->rbac->is_super_admin($current_user->id)): ?>
+<?php if (!empty($install_folder_exists) && isset($current_user) && service('rbac')->is_super_admin($current_user->id)): ?>
 <div class="container-fluid">
     <div class="alert alert-danger d-flex align-items-start" role="alert">
         <?php echo render_icon('triangle-exclamation', 'mr-2 mt-1'); ?>
@@ -37,7 +37,7 @@
                     <div class="col-md-8">
                         <span class="badge badge-light text-indigo font-weight-bold mb-2 px-3 py-1" style="border-radius:20px;">Selamat Datang</span>
                         <h2 class="font-weight-bold text-white mb-2" style="letter-spacing:-0.5px;">
-                            <?php echo esc_html($current_user->full_name); ?>
+                            <?php echo esc_html($current_user->full_name ?? session()->get('full_name') ?? 'Administrator'); ?>
                         </h2>
                         <p class="text-white-50 mb-0" style="font-size:0.95rem;line-height:1.6;">
                             Anda berada di panel kontrol administrasi resmi <strong><?php echo esc_html(site_name()); ?></strong>. Kelola publikasi artikel, pengumuman, data sekolah, dan konfigurasi tampilan dengan mudah.

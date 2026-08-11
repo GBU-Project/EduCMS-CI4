@@ -40,6 +40,32 @@ abstract class BaseController extends Controller
         parent::initController($request, $response, $logger);
 
         // Preload any models, libraries, etc, here.
-        // $this->session = service('session');
+        $session = service('session');
+        if ($session->get('logged_in') && $session->get('user_id')) {
+            $userId      = (int) $session->get('user_id');
+            $db          = \Config\Database::connect();
+            $currentUser = null;
+            if ($db->tableExists('users')) {
+                $currentUser = $db->table('users')->where('id', $userId)->get()->getRow();
+            }
+            if (! $currentUser) {
+                $currentUser = (object) [
+                    'id'        => $userId,
+                    'username'  => (string) $session->get('username'),
+                    'full_name' => (string) $session->get('full_name'),
+                    'email'     => (string) $session->get('email'),
+                ];
+            }
+            service('renderer')->setVar('current_user', $currentUser);
+        }
+
+        $db = \Config\Database::connect();
+        if ($db->tableExists('menus') && $db->tableExists('menu_groups')) {
+            $menuModel  = new \App\Models\MenuModel();
+            $headerMenu = $menuModel->getTreeByGroupSlug('header');
+            $footerMenu = $menuModel->getTreeByGroupSlug('footer');
+            service('renderer')->setVar('header_menu', $headerMenu);
+            service('renderer')->setVar('footer_menu', $footerMenu);
+        }
     }
 }

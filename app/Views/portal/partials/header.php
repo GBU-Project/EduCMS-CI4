@@ -44,17 +44,21 @@
     <meta name="twitter:card" content="summary">
     <?php endif; ?>
 
+    <?php
+        $activeTheme = get_setting('theme', 'active_theme', 'default');
+        $isIslamic   = ($activeTheme === 'islamic');
+    ?>
+
     <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <?php if ($isIslamic): ?>
+    <link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    <?php endif; ?>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         body { font-family: 'Outfit', sans-serif; }
 
-        /* Rich content rendering (posts/pages authored with the TinyMCE editor).
-           The Tailwind Typography plugin (loaded above) handles most of this via
-           the 'prose' class, but tables and embedded video need extra help to
-           stay responsive since editor-inserted markup isn't scoped to prose's
-           container width by default. */
+        /* Rich content rendering */
         .prose table {
             display: block;
             overflow-x: auto;
@@ -67,16 +71,58 @@
         .prose iframe {
             max-width: 100%;
         }
-        /* Embedded video (TinyMCE 'media' plugin output) responsive at a 16:9 ratio */
         .prose iframe[src*="youtube"],
         .prose iframe[src*="vimeo"] {
             width: 100%;
             aspect-ratio: 16 / 9;
             height: auto;
         }
+
+        <?php if ($isIslamic): ?>
+        .font-arabic { font-family: 'Amiri', serif; }
+        body.theme-islamic {
+            background-color: #f0fdf4 !important;
+        }
+        body.theme-islamic .bg-indigo-600,
+        body.theme-islamic .bg-indigo-700,
+        body.theme-islamic .bg-indigo-500 { background-color: #059669 !important; }
+        body.theme-islamic .hover\:bg-indigo-700:hover { background-color: #047857 !important; }
+        body.theme-islamic .hover\:bg-indigo-50:hover { background-color: #ecfdf5 !important; }
+        body.theme-islamic .bg-indigo-700 { background-color: #047857 !important; }
+        body.theme-islamic .text-indigo-600,
+        body.theme-islamic .text-indigo-700,
+        body.theme-islamic .text-indigo-800 { color: #059669 !important; }
+        body.theme-islamic .text-indigo-500 { color: #10b981 !important; }
+        body.theme-islamic .text-indigo-200 { color: #a7f3d0 !important; }
+        body.theme-islamic .text-indigo-100 { color: #d1fae5 !important; }
+        body.theme-islamic .bg-slate-900 { background-color: #064e3b !important; }
+        body.theme-islamic .border-indigo-600 { border-color: #059669 !important; }
+        body.theme-islamic .focus\:border-indigo-500:focus { border-color: #059669 !important; }
+        body.theme-islamic .focus\:ring-indigo-100:focus { --tw-ring-color: #d1fae5 !important; }
+        body.theme-islamic .shadow-indigo-100 { box-shadow: 0 10px 25px -5px rgba(16, 185, 129, 0.2) !important; }
+        body.theme-islamic .shadow-indigo-900\/40 { box-shadow: 0 10px 25px -5px rgba(4, 120, 87, 0.4) !important; }
+        body.theme-islamic .from-indigo-600 { --tw-gradient-from: #059669 var(--tw-gradient-from-position) !important; --tw-gradient-to: rgb(5 150 105 / 0) var(--tw-gradient-to-position) !important; --tw-gradient-stops: var(--tw-gradient-via-stops, var(--tw-gradient-from), var(--tw-gradient-to)) !important; }
+        body.theme-islamic .to-indigo-700 { --tw-gradient-to: #047857 var(--tw-gradient-to-position) !important; }
+        body.theme-islamic .from-slate-900\/90 { --tw-gradient-from: rgb(6 78 59 / 0.95) var(--tw-gradient-from-position) !important; }
+        <?php endif; ?>
     </style>
 </head>
-<body class="bg-slate-50 text-slate-900 antialiased flex flex-col min-h-screen">
+<body class="<?php echo $isIslamic ? 'theme-islamic ' : ''; ?>bg-slate-50 text-slate-900 antialiased flex flex-col min-h-screen">
+
+    <?php if ($isIslamic): ?>
+    <!-- Islamic Theme Banner -->
+    <div class="bg-gradient-to-r from-emerald-900 via-emerald-800 to-emerald-900 text-amber-300 py-2 px-4 text-xs font-semibold tracking-wide border-b border-amber-500/30">
+        <div class="max-w-7xl mx-auto flex items-center justify-between">
+            <div class="hidden sm:flex items-center space-x-2 text-emerald-100">
+                <i data-lucide="moon" class="w-3.5 h-3.5 text-amber-400"></i>
+                <span>Selamat Datang di Portal Resmi <?php echo esc_html(site_name()); ?></span>
+            </div>
+            <div class="mx-auto sm:mx-0 font-arabic text-base text-amber-300 font-bold tracking-wide">
+                بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ — Assalamu'alaikum Warahmatullahi Wabarakatuh
+            </div>
+        </div>
+    </div>
+    <?php endif; ?>
 
     <!-- Header Navigation -->
     <nav class="bg-white/80 backdrop-blur-md sticky top-0 z-50 border-b border-slate-100">

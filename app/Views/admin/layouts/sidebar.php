@@ -1,5 +1,5 @@
 <?php
-$active_segment = $this->uri->segment(2);
+$active_segment = service('request')->getUri()->getSegment(2);
 if (empty($active_segment)) {
     $active_segment = 'dashboard';
 }
@@ -182,7 +182,7 @@ $insert_menu_after = function (&$menu, $after_key, $new_key, $new_item) {
           + array_slice($menu, $pos + 1, NULL, TRUE);
 };
 
-if ($this->rbac->is_super_admin($current_user->id)) {
+if (isset($current_user) && service('rbac')->is_super_admin($current_user->id)) {
     $insert_menu_after($admin_sidebar_menu, 'dashboard', 'styleguide', array(
         'title' => 'UI Styleguide',
         'url' => 'admin/styleguide',
@@ -192,7 +192,7 @@ if ($this->rbac->is_super_admin($current_user->id)) {
     ));
 }
 
-if ($this->rbac->has_permission($current_user->id, 'settings.view')) {
+if (isset($current_user) && service('rbac')->has_permission($current_user->id, 'settings.view')) {
     $insert_menu_after($admin_sidebar_menu, 'settings', 'theme_website', array(
         'title' => 'Theme Website',
         'url' => 'admin/theme-website',

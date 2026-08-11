@@ -90,8 +90,17 @@
             border-bottom: 1px solid #e2e8f0;
             padding: 12px 24px;
         }
+        html, body {
+            height: 100%;
+            width: 100%;
+        }
+        .wrapper {
+            width: 100%;
+            min-height: 100%;
+        }
         .content-wrapper {
             background-color: #f8fafc !important;
+            min-height: calc(100vh - 57px);
         }
         .dropdown-menu-indigo {
             background-color: #6366f1;

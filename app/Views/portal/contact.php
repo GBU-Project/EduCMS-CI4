@@ -103,7 +103,7 @@
 
             <!-- Google Maps Embed -->
             <?php
-                $custom_maps_embed = trim($this->site_settings['school']['maps_embed'] ?? '');
+                $custom_maps_embed = trim(get_setting('school', 'maps_embed', ''));
             ?>
             <div class="rounded-2xl overflow-hidden border border-slate-100 shadow-sm h-64">
                 <?php if (!empty($custom_maps_embed)): ?>

@@ -8,6 +8,15 @@ $(document).ready(function() {
     initThemeManager();
     // Initialize TinyMCE Rich Text Editor
     initRichTextEditor();
+
+    // Recalculate AdminLTE layout & trigger window resize on initial load
+    setTimeout(function() {
+        $(window).trigger('resize');
+    }, 50);
+});
+
+$(window).on('load', function() {
+    $(window).trigger('resize');
 });
 
 // =========================================================

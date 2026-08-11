@@ -240,3 +240,25 @@ if (! function_exists('form_error')) {
         return $prefix . $error . $suffix;
     }
 }
+
+if (! function_exists('view')) {
+    /**
+     * Custom view() wrapper. Automatically wraps admin panel view pages
+     * with AdminLTE header, sidebar, and footer layout.
+     */
+    function view(string $name, array $data = [], array $options = []): string
+    {
+        $renderer = service('renderer');
+
+        if (str_starts_with($name, 'admin/') && ! str_starts_with($name, 'admin/layouts/') && ! str_starts_with($name, 'admin/components/')) {
+            $header  = $renderer->setData($data, 'raw')->render('admin/layouts/header', $options);
+            $sidebar = $renderer->setData($data, 'raw')->render('admin/layouts/sidebar', $options);
+            $content = $renderer->setData($data, 'raw')->render($name, $options);
+            $footer  = $renderer->setData($data, 'raw')->render('admin/layouts/footer', $options);
+
+            return $header . $sidebar . $content . $footer;
+        }
+
+        return $renderer->setData($data, 'raw')->render($name, $options);
+    }
+}

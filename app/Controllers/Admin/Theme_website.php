@@ -38,7 +38,7 @@ class Theme_website extends BaseController
 
     public function save()
     {
-        if ($this->request->getMethod() !== 'post') {
+        if (strtoupper($this->request->getMethod()) !== 'POST') {
             return redirect()->to(base_url('admin/theme-website'));
         }
 

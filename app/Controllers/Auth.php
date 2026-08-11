@@ -13,7 +13,7 @@ class Auth extends BaseController
             return redirect()->to(base_url('admin'));
         }
 
-        if ($this->request->getMethod() === 'post') {
+        if (strtoupper($this->request->getMethod()) === 'POST') {
             $identity = $this->request->getPost('identity');
             $password = $this->request->getPost('password');
             $remember = (bool) $this->request->getPost('remember');
@@ -35,6 +35,9 @@ class Auth extends BaseController
                 session()->remove('redirect_to');
 
                 if ($redirectTo && trim($redirectTo, '/') !== 'admin/login') {
+                    if (str_starts_with($redirectTo, 'http://') || str_starts_with($redirectTo, 'https://')) {
+                        return redirect()->to($redirectTo);
+                    }
                     return redirect()->to(base_url($redirectTo));
                 }
 
@@ -59,7 +62,7 @@ class Auth extends BaseController
 
     public function forgot()
     {
-        if ($this->request->getMethod() === 'post') {
+        if (strtoupper($this->request->getMethod()) === 'POST') {
             $email = $this->request->getPost('email');
 
             if (empty($email) || ! filter_var($email, FILTER_VALIDATE_EMAIL)) {

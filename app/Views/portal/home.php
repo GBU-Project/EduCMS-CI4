@@ -588,14 +588,19 @@ if (!empty($homepage_sections)):
             case 'ppdb':
                 if (!$main_opened) { echo '<main class="flex-grow w-full">'; $main_opened = TRUE; }
                 if (!empty($show_ppdb_section)):
+                    $activeTheme = get_setting('theme', 'active_theme', 'default');
+                    $isIslamic   = ($activeTheme === 'islamic');
 ?>
-<section class="bg-gradient-to-r from-indigo-600 to-indigo-700 py-16">
+<section class="<?php echo $isIslamic ? 'bg-gradient-to-r from-emerald-800 via-emerald-700 to-teal-900' : 'bg-gradient-to-r from-indigo-600 to-indigo-700'; ?> py-16">
     <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-5">
-        <span class="text-xs font-bold uppercase tracking-widest text-indigo-200"><?php echo !empty($hp_ppdb_subtitle) ? esc_html($hp_ppdb_subtitle) : 'Tahun Ajaran Baru'; ?></span>
-        <h2 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-white"><?php echo !empty($hp_ppdb_title) ? esc_html($hp_ppdb_title) : 'Pendaftaran Siswa Baru'; ?></h2>
-        <p class="text-indigo-100 max-w-xl mx-auto">Daftarkan putra-putri Anda sekarang melalui PPDB Online. Proses cepat, mudah, dan dapat dipantau secara berkala.</p>
-        <a href="<?php echo base_url('ppdb'); ?>" class="inline-flex items-center justify-center space-x-2 bg-white hover:bg-indigo-50 text-indigo-700 px-6 py-3 rounded-xl font-bold shadow-xl transition">
-            <span>Daftar Sekarang</span>
+        <?php if ($isIslamic): ?>
+            <div class="font-arabic text-amber-300 text-xl font-bold tracking-wide">بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ</div>
+        <?php endif; ?>
+        <span class="text-xs font-bold uppercase tracking-widest <?php echo $isIslamic ? 'text-amber-300' : 'text-indigo-200'; ?>"><?php echo !empty($hp_ppdb_subtitle) ? esc_html($hp_ppdb_subtitle) : 'Penerimaan Santri &amp; Siswa Baru'; ?></span>
+        <h2 class="text-2xl sm:text-3xl font-extrabold tracking-tight text-white"><?php echo !empty($hp_ppdb_title) ? esc_html($hp_ppdb_title) : 'Pendaftaran PPDB Online'; ?></h2>
+        <p class="<?php echo $isIslamic ? 'text-emerald-100' : 'text-indigo-100'; ?> max-w-xl mx-auto">Daftarkan putra-putri Anda sekarang melalui sistem PPDB Online. Proses pendaftaran cepat, transparan, dan terintegrasi.</p>
+        <a href="<?php echo base_url('ppdb'); ?>" class="inline-flex items-center justify-center space-x-2 <?php echo $isIslamic ? 'bg-amber-400 hover:bg-amber-300 text-emerald-950 font-extrabold' : 'bg-white hover:bg-indigo-50 text-indigo-700 font-bold'; ?> px-7 py-3.5 rounded-xl shadow-xl transition transform hover:-translate-y-0.5">
+            <span>Daftar PPDB Sekarang</span>
             <i data-lucide="arrow-right" class="w-5 h-5"></i>
         </a>
     </div>

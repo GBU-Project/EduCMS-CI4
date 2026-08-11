@@ -61,7 +61,7 @@
                                         <?php echo render_icon('plus', 'mr-1'); ?> Tambah Item Menu
                                     </a>
                                     <a href="<?php echo base_url('admin/menus?group_id=' . $group_id . '&trash=1'); ?>" class="btn btn-sm btn-outline-danger ml-2">
-                                        <?php echo render_icon('trash-can', 'mr-1'); ?> Tempat Sampah (<?php echo $this->db->where('group_id', $group_id)->where('deleted_at !=', NULL)->count_all_results('menus'); ?>)
+                                        <?php echo render_icon('trash-can', 'mr-1'); ?> Tempat Sampah (<?php echo \Config\Database::connect()->table('menus')->where('group_id', $group_id)->where('deleted_at !=', null)->countAllResults(); ?>)
                                     </a>
                                 <?php endif; ?>
                             </div>

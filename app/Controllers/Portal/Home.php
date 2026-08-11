@@ -41,7 +41,30 @@ class Home extends BaseController
         $showGallery       = ! isset($hp['gallery.enabled']) || $hp['gallery.enabled'] == '1';
         $showPpdb          = ! isset($hp['ppdb.enabled']) || $hp['ppdb.enabled'] == '1';
 
+        $homepageSections = [];
+        if ($db->tableExists('settings')) {
+            $secJson = get_setting('homepage', 'sections', '');
+            if (! empty($secJson)) {
+                $homepageSections = json_decode($secJson, true);
+            }
+        }
+        if (empty($homepageSections) || ! is_array($homepageSections)) {
+            $homepageSections = [
+                ['key' => 'hero', 'enabled' => 1],
+                ['key' => 'stats', 'enabled' => 1],
+                ['key' => 'news', 'enabled' => 1],
+                ['key' => 'announcements', 'enabled' => 1],
+                ['key' => 'agenda', 'enabled' => 1],
+                ['key' => 'videos', 'enabled' => 1],
+                ['key' => 'gallery', 'enabled' => 1],
+                ['key' => 'testimonials', 'enabled' => 1],
+                ['key' => 'partners', 'enabled' => 1],
+                ['key' => 'ppdb', 'enabled' => 1],
+            ];
+        }
+
         $data = [
+            'homepage_sections'          => $homepageSections,
             'show_hero_section'          => $showHero,
             'show_video_section'         => $showVideos,
             'show_news_section'          => $showNews,
@@ -127,6 +150,10 @@ class Home extends BaseController
         }
         $data['partners'] = $partners;
 
+        // Featured Post
+        $featuredPost = ! empty($featuredPosts) ? $featuredPosts[0] : (! empty($latestPosts) ? $latestPosts[0] : null);
+        $data['featured_post'] = $featuredPost;
+
         // Stats counts
         $teacherCount = 0;
         if ($db->tableExists('teachers')) {
@@ -141,6 +168,28 @@ class Home extends BaseController
             $staffCount = $staffModel->where('status', 'active')->countAllResults();
         }
         $data['staff_count'] = $staffCount;
+
+        $extracurricularCount = 0;
+        if ($db->tableExists('extracurriculars')) {
+            $extracurricularCount = (int) $db->table('extracurriculars')->where('deleted_at', null)->countAllResults();
+        }
+
+        $achievementCount = 0;
+        if ($db->tableExists('achievements')) {
+            $achievementCount = (int) $db->table('achievements')->where('status', 'published')->where('deleted_at', null)->countAllResults();
+        }
+
+        $postCount = 0;
+        if ($db->tableExists('posts')) {
+            $postCount = (int) $db->table('posts')->where('status', 'published')->where('deleted_at', null)->countAllResults();
+        }
+
+        $data['stats'] = [
+            'staff_count'           => $teacherCount + $staffCount,
+            'extracurricular_count' => $extracurricularCount,
+            'achievement_count'     => $achievementCount,
+            'post_count'            => $postCount,
+        ];
 
         $data['title']    = site_name() . ' | Home';
         $data['seo_meta'] = $this->loadSeo('home', site_name() . ' - Official Website');
