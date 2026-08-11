@@ -30,3 +30,10 @@ Thumbs.db
 .idea/
 .vscode/
 *.swp
+
+# Build & Debug Artifacts
+/build/
+*.txt
+check_redirects.php
+debug_307.php
+
